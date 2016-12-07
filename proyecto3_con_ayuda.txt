@@ -1,0 +1,196 @@
+Problema
+--------
+
+Se quiere resolver un juego que consiste de una retícula de N x M
+casillas, cada una rodeada de 4 segmentos de recta de igual longitud.
+Las celdas pueden venir etiquetadas con enteros en { 0, 1, 2, 3, 4 }
+que indican cuantos segmentos que rodean a la celda están en la
+solución.  La solución al juego consiste en trazar sobre los segmentos
+de la retícula una única línea cerrada, continua y simple (que no se
+dobla sobre si misma), la cual particiona las celdas en el grupo de
+celdas interiores al perímetro que define la línea y las celdas
+exteriores al mismo. Observar que para todo par de celdas c1 y c2:
+
+1. Ambas celdas son interiores si y sólo si existe un camino de c1
+   a c2 que no cruza el perímetro,
+
+2. Una celda es exterior si y solo si se puede trazar un camino que
+   "sale" del retículado sin cruzar el perímetro,
+
+3. Si c1 es interior y c2 es exterior, entonces todo camino que
+   conecta a c1 y c2 cruza el perímetro.
+
+Solución
+--------
+
+Usted debe construir un programa eficiente que solucione instancias
+arbitrarias del juego utilizando un SAT solver, como por ejemplo, 
+Minisat, Picosat, o zchaff.
+
+La entrada al sistema será un archivo de instancias en donde cada
+línea del archivo corresponde a una instancia distinta.  El programa
+tienen que generar un archivo de salida que contenga las instancias
+de entrada junto con la solución encontrada (en líneas distintas
+pero consecutivas).
+
+Cada líneas del archivo de entrada tiene el siguiente formato. Primero
+vienen dos enteros N y M separados por espacio que indican el tamaño
+de la retícula en N filas por M columnas. A continuación, separado por
+espacio, vienen N grupos de M carácteres sobre el alfabeto {.,0,1,2,3,4}.
+La idea es que la etiqueta para la celda en la coordenada (i,j) sobre
+el retículado, donde la esquina superior izquierda se corresponde con
+la celda (1,1), se corresponde con el j-ésimo carácter del i-ésimo
+grupo.  Si dicho carácter es igual a '.', entonces la celda no tienen
+una etiqueta asignada, sino su etiqueta viene dado por dicho carácter.
+
+Para cada línea del archivo de entrada (i.e., instancia del juego),
+el archivo de salida debe contener dos líneas. La primera es la misma
+línea en el archivo de entrada que describe la instancia. La segunda 
+indica cuales son los segmentos del retículado que definen la línea
+cerrada, simple y continua que satisface las restricciones impuestas
+por las etiquetas. Esta línea se especfíca indicando para cada 
+segmento de la retícula, con los símbolos 0 y 1, si dicho segmento
+pertenece o no a la solución. Los segmentos del retículado se 
+enumeran en orden comenzando por los segmentos horizontas en la
+primera fila, desde la esquina superior izquierda, seguidos de
+los segmentos verticales en la primera fila, luego los segmentos
+horizontales en la segunda fila, y así sucesivamente.
+
+Ver los ejemples de archivos de entrada y salida.
+
+Usted tiene que poder resolver de forma correcta todas las
+instancias provistas en el archivo instances.txt.
+
+Los SAT solver asumen que la forma proposicional viene codificada
+en el formato SATLIB (ver http://www.cs.ubc.ca/~hoos/SATLIB/benchm.html)
+
+Entregables
+-----------
+
+- Código fuente
+- Archivo de salida con las soluciones calculadas
+- Informe describiendo la solución implementada
+
+
+==============================================================================
+Ayuda
+==============================================================================
+
+Denotamos la celda rodeada por los cuatro puntos { (i-1,j-1), (i,j-1),
+(i-1,j), (i,j) } con el símbolo c(i,j), para i=1..N y j=1..M.  Para cada
+celda c=(i,j), utilizaremos 4 proposiciones q(c,d) con d en { n,e,s,w }
+que denotaran la presencia de un segmento al norte, este, sur y oeste
+de la celda respectivamente.
+
+
+Cláusulas tipo 0
+----------------
+
+Cada segmento interno de la retícula es referenciado por dos celdas distintas.
+Por ejemplo, el segmento vertical entre los puntos (1,1) y (1,2) corresponde
+al segmento este de la celda c(1,2) y al segmento oeste de la celda c(2,2).
+
+Para obtener una interpretación consistente debemos forzar que las dos
+proposiciones q(c,d) que refieren al mismo segmento tengan la misma
+interpretación:
+
+Para toda celda c=(i,j) con 1 <= i < N y 1 <= j <= M,
+
+q(i,j,e) <=> q(i+1,j,w)
+
+Para toda celda c=(i,j) con 1 <= i <= N y 1 <= j < M,
+
+q(i,j,n) <=> q(i,j+1,s)
+
+
+Cláusulas tipo 1
+----------------
+
+Para cada celda c=(i,j) y etiqueta n en { 0, 1, 2, 3, 4 }, se deben
+agregar fórmulas que fuerzen la presencia de n segmentos alrededor de
+la celda c. Por ejemplo, si n = 0, se deben agregar las fórmulas:
+
+-q(i,j,n)
+-q(i,j,e)
+-q(i,j,s)
+-q(i,j,w)
+
+y si n=1, se deben agregar las fórmulas:
+
+q(i,j,n) v q(i,j,e) v q(i,j,s) v q(i,j,w)
+-q(i,j,n) v -q(i,j,e)
+-q(i,j,n) v -q(i,j,s)
+-q(i,j,n) v -q(i,j,w)
+-q(i,j,e) v -q(i,j,s)
+-q(i,j,e) v -q(i,j,w)
+-q(i,j,s) v -q(i,j,w)
+
+
+Cláusulas tipo 2
+----------------
+
+Una solución particiona las celdas en dos grupos: el grupo de celdas
+interiores al perímetro y el grupo de celdas exteriores. Debemos 
+identificar el tipo de cada celda en una solución. Para esto definimos
+símbolos z(c) para cada celda c=(i,j) que denotan cuando una celda es
+exterior (z(c)=TRUE) o interior (z(c)=FALSE). Las siguientes fórmulas
+fuerzan que los símbolos z(c) esten bien definidos en cada solución.
+
+Para cada celda c=(1,j) con 1 <= j <= M en el borde izquierdo,
+
+-q(1,j,w) <=> z(1,j)
+
+Para cada celda c=(N,j) con 1 <= j <= M en el borde derecho,
+
+-q(N,j,e) <=> z(N,j)
+
+Para cada celda c=(i,1) con 1 <= i <= N en el borde inferior,
+
+-q(i,1,s) <=> z(i,1)
+
+Para cada celda c=(i,M) con 1 <= i <= N en el borde superior,
+
+-q(i,M,n) <=> z(i,M)
+
+Para las celdas c=(i,j) con 1 < i < N y 1 < j < M, que no están
+en ningún borde, definimos:
+
+z(i,j) <=> [-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)]
+
+
+Cláusulas tipo 3
+----------------
+
+Tenemos que describir cuando una celda es alcanzable desde otra
+celda de forma inductiva. Utilizamos el símbolo r(c,c') para denotar
+que la celda c' es alcanzable desde la celda c. Inicialmente, toda
+celda c es alcanzable desde ella misma:
+
+r(c,c)
+
+Para el caso inductivo, definimos el alcance a partir de la adyacencia
+de las celdas y la transitividad de la relación. Por ejemplo, si la celda
+c' es alcanzable desde la celda c, y la celda c'' es adyancente a c'
+por el lado norte, entonces:
+
+r(c,c') & -q(c',n) => r(c,c'')
+
+ya que si c' es alcanzable desde c y no existe un segmento entre c' y c'',
+entonces c'' también debe ser alcanzable desde c. Similarmente definimos
+fórmulas para las otras direcciones e, s, y w.
+
+
+Cláusulas tipo 4
+----------------
+
+Finalmente, debemos que indicar que cada par de celdas interiores tienen
+que ser alcazables la una de la otra. Para cada par de celdas c y c':
+
+z(c) & z(c') => r(c,c')
+
+
+La teoría proposicional entonces la conforman todas las cláusulas de tipos
+0, 1, 2, 3 y 4. Para un juego de dimensión n = NxM, el número de cláusulas
+es O(n + n + n + n^2 + n^2) = O(n^2).
+
+
