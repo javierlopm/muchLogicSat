@@ -1,5 +1,3 @@
-import pycosat
-
 def read_input():
     in_str = input()
     toks = in_str.split()
