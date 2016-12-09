@@ -118,6 +118,7 @@ la celda c. Por ejemplo, si n = 0, se deben agregar las fórmulas:
 y si n=1, se deben agregar las fórmulas:
 
 q(i,j,n) v q(i,j,e) v q(i,j,s) v q(i,j,w)
+
 -q(i,j,n) v -q(i,j,e)
 -q(i,j,n) v -q(i,j,s)
 -q(i,j,n) v -q(i,j,w)
