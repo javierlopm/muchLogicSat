@@ -198,8 +198,7 @@ for i,line in enumerate(rep,1):
 if debug:
     for i in range(0,6):
         print(".",end=" ")
-
-print("\n\n")
+    print("\n\n")
 
 if debug:
     # Mostrando clausulas con nuestro tipo de datos
@@ -251,7 +250,7 @@ with open('salida.txt', 'r') as myfile:
 # Iterate results
 try:
     result = []
-    for i in (data.split("\n")[1].split()):
+    for i in (data.split("\n")[1].split()[:-1]):
         # Convert int result to clauses back again
         (r,c,d) = Clause.universe[abs(int(i))-1]
         c = Clause(r,c,d,False)
@@ -266,9 +265,13 @@ try:
     s1 = sorted(s0,key=lambda c: c.dir.value )
     s2 = sorted(s1,key=attrgetter("i"))
 
-    list(map(lambda c: print(c),s2))
+    if debug:
+        list(map(lambda c: print(c),s2))
 
     index = 0
+
+    print("5 5 " + in_str)
+    print("5 5 ",end="")
 
     # Print result in given format
     for i in range(1,6):
@@ -276,11 +279,11 @@ try:
             for j in range(1,6):
                 # Casos especiales: norte y oeste
                 # Solo la primera fila tiene nortes
-                if (i != 1) and (d == Dir.north):
+                if (i > 1) and (d is Dir.north):
                     break
 
                 # Solo hay un oeste al princio de cada linea
-                if (j == 2) and (d == Dir.west):
+                if (j > 1 and (d is Dir.west)):
                     break
 
                 if (s2[index].to_tuple() == (i,j,d)):
@@ -290,11 +293,12 @@ try:
                         print("0",end="")
                     index += 1
                 else:
+                    # print("No se encontro {} {} con {}".format(i,j,d.name))
                     print("0",end="")
 
-            if (d != Dir.west) :
+            if (d is Dir.south) or (d is Dir.east) or ((d is Dir.north) and i==1):
                 print(" ",end="")
-                    
+
 except Exception as e:
     print(e)
     print("UNSATISFIABLE")
