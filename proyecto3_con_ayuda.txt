@@ -139,6 +139,8 @@ fuerzan que los símbolos z(c) esten bien definidos en cada solución.
 
 Para cada celda c=(1,j) con 1 <= j <= M en el borde izquierdo,
 
+[[Q(1,j,W),Z(1,j)][-Q(1,j,W),-Z(1,j)]]
+[[Q(cols,j,E),Z(cols,j)][-Q(cols,j,E),-Z(cols,j)]]
 -q(1,j,w) <=> z(1,j)
 
 Para cada celda c=(N,j) con 1 <= j <= M en el borde derecho,
@@ -147,6 +149,8 @@ Para cada celda c=(N,j) con 1 <= j <= M en el borde derecho,
 
 Para cada celda c=(i,1) con 1 <= i <= N en el borde inferior,
 
+[[Q(i,1,S),Z(i,1)][-Q(i,1,S),-Z(i,1)]]
+[[Q(i,rows,N),Z(i,rows)][-Q(i,rows,N),-Z(i,rows)]]
 -q(i,1,s) <=> z(i,1)
 
 Para cada celda c=(i,M) con 1 <= i <= N en el borde superior,

@@ -248,6 +248,42 @@ for i,line in enumerate(rep,1):
         ##todo sigue dendro del doble ciclo para i,j
 
         # Interior vs exterior clauses
+        N=Dir.north
+        S=Dir.south
+        E=Dir.east
+        W=Dir.west 
+        #Clausulas tipo 2
+
+        for j in range(1,cols):
+            cnf_clauses+= [[Q(1,j,W),Z(1,j)][-Q(1,j,W),-Z(1,j)]]
+            cnf_clauses+= [[Q(cols,j,E),Z(cols,j)][-Q(cols,j,E),-Z(cols,j)]]
+
+        for i in range(1,rows):
+            cnf_clauses+= [[Q(i,1,S),Z(i,1)][-Q(i,1,S),-Z(i,1)]]
+            cnf_clauses+= [[Q(i,rows,N),Z(i,rows)][-Q(i,rows,N),-Z(i,rows)]]
+
+        for i in range(2,rows-1):
+            for j in range(2,cols-1):
+                #(=>)
+                #( !E ||  !N ||  !P ||  !S || V) && ( !E ||  !N ||  !P ||  !S ||  !W) && ( !E ||  !N ||  !P || U || V) && ( !E ||  !N ||  !P || U ||  !W) && ( !E ||  !P || R ||  !S || V) && ( !E ||  !P || R ||  !S ||  !W) && ( !E ||  !P || R || U || V) && ( !E ||  !P || R || U ||  !W) && ( !N ||  !P ||  !S || T || V) && ( !N ||  !P ||  !S || T ||  !W) && ( !N ||  !P || T || U || V) && ( !N ||  !P || T || U ||  !W) && ( !P || R ||  !S || T || V) && ( !P || R ||  !S || T ||  !W) && ( !P || R || T || U || V) && ( !P || R || T || U ||  !W)
+                
+                cnf_clauses+=  [[ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i-1,j)] ,
+                 [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) ,  -Q(i,j,W)] ,
+                 [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) , Z(i,j-1) , Z(i-1,j)] ,
+                 [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) , Z(i,j-1) ,  -Q(i,j,W)] ,
+                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i-1,j)] ,
+                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) ,  -Q(i,j,W)] ,
+                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) , Z(i,j-1) , Z(i-1,j)] ,
+                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) , Z(i,j-1) ,  -Q(i,j,W)] ,
+                 [ -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i+1,j) , Z(i-1,j)] ,
+                 [ -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i+1,j) ,  -Q(i,j,W)] ,
+                 [ -Q(i,j,N) ,  -Z(i,j) , Z(i+1,j) , Z(i,j-1) , Z(i-1,j)] ,
+                 [ -Q(i,j,N) ,  -Z(i,j) , Z(i+1,j) , Z(i,j-1) ,  -Q(i,j,W)] ,
+                 [ -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i+1,j) , Z(i-1,j)] ,
+                 [ -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i+1,j) ,  -Q(i,j,W)] ,
+                 [ -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) , Z(i-1,j)] ,
+                 [ -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) ,  -Q(i,j,W)] ]
+
         # M = 5 # ?
         # if ( (i == 1) and (1 <= j and j <= M) ):
         #     cnf_clauses += [ [Q(1,j,Dir.west),Z(1,j)] ]
@@ -330,10 +366,7 @@ for i,line in enumerate(rep,1):
 
         #Adjacent segments
         #COMENTAR HASTA ACA
-        N=Dir.north
-        S=Dir.south
-        E=Dir.east
-        W=Dir.west
+
         # q(i,j,N) and q(i,j,E) => (¬q(i,j+1,N) or ¬q(i-1,j,E))
         #( P && Q => (~R || ~W))
         #((¬P || ¬Q ) or (~R || ~W))
