@@ -354,20 +354,52 @@ for i,line in enumerate(rep,1):
 
 
         #Adjacent segments
-        #COMENTAR HASTA ACA
 
-        # q(i,j,N) and q(i,j,E) => (¬q(i,j+1,N) or ¬q(i-1,j,E))
-        #( P && Q => (~R || ~W))
-        #((¬P || ¬Q ) or (~R || ~W))
-        #COMENTAR SI ALGO NO FURULA
-        #CASO BLAI, UNA PARTE
+        #Puntos esquina
+        #(1,1)
+        #(¬q(1,1,N) and ¬q(1,1,W)) V (q(1,1,N) and q(1,1,W))
+        #CNF
+        (¬q(1,1,N) ∨ q(1,1,W)) ∧
+        (q(1,1,N) ∨ ¬q(1,1,W))
 
-        #for i in range(1,rows-1):
-        #    for j in range(1,cols-1):
-        #        cnf_clauses += [[Q(i,j,N).negate(),Q(i,j,E).negate(),Q(i,j+1,N).negate(),Q(i-1,j,E).negate()]]
-        #        cnf_clauses += [[Q(i,j,N).negate(),Q(i,j,W).negate(),Q(i,j-1,N).negate(),Q(i-1,j,W).negate()]]
-        #        cnf_clauses += [[Q(i,j,S).negate(),Q(i,j,E).negate(),Q(i,j+1,S).negate(),Q(i+1,j,E).negate()]]
-        #        cnf_clauses += [[Q(i,j,S).negate(),Q(i,j,W).negate(),Q(i,j-1,S).negate(),Q(i+1,j,W).negate()]]
+        #(n+1,1)
+        #(¬q(n,1,N) and ¬q(n,1,E)) V (q(n,1,N) and q(n,1,E))
+        #CNF
+        (¬q(n,1,N) ∨ q(n,1,E)) ∧
+        (q(n,1,N) ∨ ¬q(n,1,E))
+
+        #(1,m+1)
+        #(¬q(1,m,S) and ¬q(1,m,W)) V (q(1,m,S) and q(1,m,W))
+        #CNF
+        (¬q(1,m,S) ∨ q(1,m,W)) ∧
+        (q(1,m,S) ∨ ¬q(1,m,W))
+
+        #(n+1,m+1)
+        #(¬q(n,m,S) and ¬q(n,m,E)) V (q(n,m,S) and q(n,m,E))
+        #CNF
+        (¬q(n,m,S) ∨ q(n,m,E)) ∧
+        (q(n,m,S) ∨ ¬q(n,m,E))
+
+        #borde superior sin puntos esquina
+        #PUNTOS: 2<=i<=n j=1
+        # (¬q(i,1,N) && ¬q(i,1,W) && ¬q(i-1,1,N)) || (q(i,1,N) && q(i,1,W) && ¬q(i-1,1,N)) ||
+        # (q(i,1,N) && ¬q(i,1,W) && q(i-1,1,N)) || (¬q(i,1,N) && q(i,1,W) && q(i-1,1,N))
+        #CNF
+        (¬q(i,1,N) ∨ ¬q(i,1,W) ∨ ¬q(i-1,1,N)) ∧
+        (¬q(i,1,N) ∨ q(i,1,W) ∨ q(i-1,1,N)) ∧
+        (q(i,1,N) ∨ ¬q(i,1,W) ∨ q(i-1,1,N)) ∧
+        (q(i,1,N) ∨ q(i,1,W) ∨ ¬q(i-1,1,N))
+
+        #borde inferior sin puntos esquina
+
+        #borde derecho sin puntos esquina
+
+        #borde izquierdo sin puntos esquina
+
+        #resto de los puntos
+        
+
+
 
     if debug:
         print()
