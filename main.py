@@ -233,7 +233,7 @@ for i,line in enumerate(rep,1):
         E=Dir.east
         W=Dir.west 
         #Clausulas tipo 2
-
+        '''
         for j in range(1,cols):
             cnf_clauses+= [[Q(1,j,W),Z(1,j)],[-Q(1,j,W),-Z(1,j)]]
             cnf_clauses+= [[Q(cols,j,E),Z(cols,j)],[-Q(cols,j,E),-Z(cols,j)]]
@@ -271,7 +271,7 @@ for i,line in enumerate(rep,1):
                  [Q(i,j,N) , Z(i,j) ,  -Z(i,j+1)] ,
                  [Z(i,j) , Q(i,j,S) ,  -Z(i,j-1)] ,
                  [Z(i,j) ,  -Z(i-1,j) , Q(i,j,W)]]
-
+            '''
     if debug:
         print()
 
@@ -361,77 +361,117 @@ for i,line in enumerate(rep,1):
         #(1,1)
         #(¬q(1,1,N) and ¬q(1,1,W)) V (q(1,1,N) and q(1,1,W))
         #CNF
-n = rows+1
-m = cols+1
+        '''
+        n = rows+1
+        m = cols+1
 
-cnf_clauses+=[
-     [-Q(1,1,N) , Q(1,1,W)]
-    ,[Q(1,1,N) , -Q(1,1,W)]
+        cnf_clauses+=[
+             [-Q(1,1,N) , Q(1,1,W)]
+            ,[Q(1,1,N) , -Q(1,1,W)]
 
-    #(n+1,1)
-    #(¬Q(n,1,N) and ¬Q(n,1,E)) V (Q(n,1,N) and Q(n,1,E))
-    #CNF
-    ,[-Q(n,1,N) , Q(n,1,E)]
-    ,[Q(n,1,N) , -Q(n,1,E)]
+            #(n+1,1)
+            #(¬Q(n,1,N) and ¬Q(n,1,E)) V (Q(n,1,N) and Q(n,1,E))
+            #CNF
+            ,[-Q(n,1,N) , Q(n,1,E)]
+            ,[Q(n,1,N) , -Q(n,1,E)]
 
-    #(1,m+1)
-    #(¬Q(1,m,S) and ¬Q(1,m,W)) V (Q(1,m,S) and Q(1,m,W))
-    #CNF
-    ,[-Q(1,m,S) , Q(1,m,W)]
-    ,[Q(1,m,S) , -Q(1,m,W)]
+            #(1,m+1)
+            #(¬Q(1,m,S) and ¬Q(1,m,W)) V (Q(1,m,S) and Q(1,m,W))
+            #CNF
+            ,[-Q(1,m,S) , Q(1,m,W)]
+            ,[Q(1,m,S) , -Q(1,m,W)]
 
-    #(n+1,m+1)
-    #(¬Q(n,m,S) and ¬Q(n,m,E)) V (Q(n,m,S) and Q(n,m,E))
-    #CNF
-    ,[-Q(n,m,S) , Q(n,m,E)]
-    ,[Q(n,m,S) , -Q(n,m,E)]
+            #(n+1,m+1)
+            #(¬Q(n,m,S) and ¬Q(n,m,E)) V (Q(n,m,S) and Q(n,m,E))
+            #CNF
+            ,[-Q(n,m,S) , Q(n,m,E)]
+            ,[Q(n,m,S) , -Q(n,m,E)]
 
-    #borde superior sin puntos esQuina
-    #PUNTOS: 2<=i<=n j=1
-    # (¬Q(i,1,N) && ¬Q(i,1,W) && ¬Q(i-1,1,N)) || (Q(i,1,N) && Q(i,1,W) && ¬Q(i-1,1,N)) ||
-    # (Q(i,1,N) && ¬Q(i,1,W) && Q(i-1,1,N)) || (¬Q(i,1,N) && Q(i,1,W) && Q(i-1,1,N))
-    #CNF
-    ,[-Q(i,1,N) , -Q(i,1,W) , -Q(i-1,1,N)]
-    ,[-Q(i,1,N) ,  Q(i,1,W) ,  Q(i-1,1,N)]
-    ,[ Q(i,1,N) , -Q(i,1,W) ,  Q(i-1,1,N)]
-    ,[ Q(i,1,N) ,  Q(i,1,W) , -Q(i-1,1,N)]
-    ]
+            #borde superior sin puntos esQuina
+            #PUNTOS: 2<=i<=n j=1
+            # (¬Q(i,1,N) && ¬Q(i,1,W) && ¬Q(i-1,1,N)) || (Q(i,1,N) && Q(i,1,W) && ¬Q(i-1,1,N)) ||
+            # (Q(i,1,N) && ¬Q(i,1,W) && Q(i-1,1,N)) || (¬Q(i,1,N) && Q(i,1,W) && Q(i-1,1,N))
+            #CNF
+            ,[-Q(i,1,N) , -Q(i,1,W) , -Q(i-1,1,N)]
+            ,[-Q(i,1,N) ,  Q(i,1,W) ,  Q(i-1,1,N)]
+            ,[ Q(i,1,N) , -Q(i,1,W) ,  Q(i-1,1,N)]
+            ,[ Q(i,1,N) ,  Q(i,1,W) , -Q(i-1,1,N)]
+            ]
 
-    #borde inferior sin puntos esquina
-    #PUNTOS: 2<=i<=n j=m
-    # (~q(i,m,S) && ~q(i,m,W) && ~q(i-1,m,S)) || (q(i,m,S) && q(i,m,W) && ~q(i-1,m,S)) ||
-    # (q(i,m,S) && ~q(i,m,W) && q(i-1,m,S)) || (~q(i,m,S) && q(i,m,W) && q(i-1,m,S))
-    #CNF
-    (¬q(i,m,S) ∨ ¬q(i,m,W) ∨ ¬q(i-1,m,S)) ∧
-    (¬q(i,m,S) ∨ q(i,m,W) ∨ q(i-1,m,S)) ∧
-    (q(i,m,S) ∨ ¬q(i,m,W) ∨ q(i-1,m,S)) ∧
-    (q(i,m,S) ∨ q(i,m,W) ∨ ¬q(i-1,m,S))
+            #borde inferior sin puntos esquina
+            #PUNTOS: 2<=i<=n j=m
+            # (~q(i,m,S) && ~q(i,m,W) && ~q(i-1,m,S)) || (q(i,m,S) && q(i,m,W) && ~q(i-1,m,S)) ||
+            # (q(i,m,S) && ~q(i,m,W) && q(i-1,m,S)) || (~q(i,m,S) && q(i,m,W) && q(i-1,m,S))
+            #CNF
+            (¬q(i,m,S) ∨ ¬q(i,m,W) ∨ ¬q(i-1,m,S)) ∧
+            (¬q(i,m,S) ∨ q(i,m,W) ∨ q(i-1,m,S)) ∧
+            (q(i,m,S) ∨ ¬q(i,m,W) ∨ q(i-1,m,S)) ∧
+            (q(i,m,S) ∨ q(i,m,W) ∨ ¬q(i-1,m,S))
 
-    #borde derecho sin puntos esquina
-    #PUNTOS: i=n 2<=j<=m
-    # (~q(n,j,N) && ~q(n,j,E) && ~q(n,j-1,E)) || (q(n,j,N) && q(n,j,E) && ~q(n,j-1,E)) ||
-    # (q(n,j,N) && ~q(n,j,E) && q(n,j-1,E)) || (~q(n,j,N) && q(n,j,E) && q(n,j-1,E))
-    #CNF
-    (¬q(n,j,N) ∨ ¬q(n,j,E) ∨ ¬q(n,j-1,E)) ∧
-    (¬q(n,j,N) ∨ q(n,j,E) ∨ q(n,j-1,E)) ∧
-    (q(n,j,N) ∨ ¬q(n,j,E) ∨ q(n,j-1,E)) ∧
-    (q(n,j,N) ∨ q(n,j,E) ∨ ¬q(n,j-1,E))
+            #borde derecho sin puntos esquina
+            #PUNTOS: i=n 2<=j<=m
+            # (~q(n,j,N) && ~q(n,j,E) && ~q(n,j-1,E)) || (q(n,j,N) && q(n,j,E) && ~q(n,j-1,E)) ||
+            # (q(n,j,N) && ~q(n,j,E) && q(n,j-1,E)) || (~q(n,j,N) && q(n,j,E) && q(n,j-1,E))
+            #CNF
+            (¬q(n,j,N) ∨ ¬q(n,j,E) ∨ ¬q(n,j-1,E)) ∧
+            (¬q(n,j,N) ∨ q(n,j,E) ∨ q(n,j-1,E)) ∧
+            (q(n,j,N) ∨ ¬q(n,j,E) ∨ q(n,j-1,E)) ∧
+            (q(n,j,N) ∨ q(n,j,E) ∨ ¬q(n,j-1,E))
 
-    #borde izquierdo sin puntos esquina
-    #PUNTOS: i=1 2<=j<=m
-    # (~q(1,j,N) && ~q(1,j,W) && ~q(1,j-1,W)) || (q(1,j,N) && q(1,j,W) && ~q(1,j-1,W)) ||
-    # (q(1,j,N) && ~q(1,j,W) && q(1,j-1,W)) || (~q(1,j,N) && q(1,j,W) && q(1,j-1,W))
-    #CNF
-    (¬q(1,j,N) ∨ ¬q(1,j,W) ∨ ¬q(1,j-1,W)) ∧
-    (¬q(1,j,N) ∨ q(1,j,W) ∨ q(1,j-1,W)) ∧
-    (q(1,j,N) ∨ ¬q(1,j,W) ∨ q(1,j-1,W)) ∧
-    (q(1,j,N) ∨ q(1,j,W) ∨ ¬q(1,j-1,W))
+            #borde izquierdo sin puntos esquina
+            #PUNTOS: i=1 2<=j<=m
+            # (~q(1,j,N) && ~q(1,j,W) && ~q(1,j-1,W)) || (q(1,j,N) && q(1,j,W) && ~q(1,j-1,W)) ||
+            # (q(1,j,N) && ~q(1,j,W) && q(1,j-1,W)) || (~q(1,j,N) && q(1,j,W) && q(1,j-1,W))
+            #CNF
+            (¬q(1,j,N) ∨ ¬q(1,j,W) ∨ ¬q(1,j-1,W)) ∧
+            (¬q(1,j,N) ∨ q(1,j,W) ∨ q(1,j-1,W)) ∧
+            (q(1,j,N) ∨ ¬q(1,j,W) ∨ q(1,j-1,W)) ∧
+            (q(1,j,N) ∨ q(1,j,W) ∨ ¬q(1,j-1,W))
 
-    #resto de los puntos
-    # CNF ((~A) && (~B) && (~C) && (~D)) || ((A) && (B) && (~C) && (~D)) || ((A) && (~B) && (C) && (~D)) || ((A) && (~B) && (~C) && (D)) || ((~A) && (B) && (C) && (~D)) || ((~A) && (B) && (~C) && (D)) || ((~A) && (~B) && (C) && (D))
+            #resto de los puntos
+            # CNF ((~A) && (~B) && (~C) && (~D)) || ((A) && (B) && (~C) && (~D)) || ((A) && (~B) && (C) && (~D)) || ((A) && (~B) && (~C) && (D)) || ((~A) && (B) && (C) && (~D)) || ((~A) && (B) && (~C) && (D)) || ((~A) && (~B) && (C) && (D))
 
+        '''
 
+        #Laterales Horizontales
+        for i in range (2,rows-1):
 
+            #Izquierdos
+            cnf_clauses += [[-Q(i,1,N),-Q(i,1,E),-Q(i,2,N),-Q(i-1,1,E)]]
+            cnf_clauses += [[-Q(i,1,S),-Q(i,1,E),-Q(i,2,S),-Q(i+1,1,E)]]
+            cnf_clauses += [[-Q(i,1,N),-Q(i,1,W),-Q(i-1,1,W)]]
+            cnf_clauses += [[-Q(i,1,S),-Q(i,1,W),-Q(i+1,1,W)]]
+
+            #Derechos
+            cnf_clauses += [[-Q(i,cols,N),-Q(i,cols,W),-Q(i,cols-1,N),-Q(i-1,cols,W)]]
+            cnf_clauses += [[-Q(i,cols,S),-Q(i,cols,W),-Q(i,cols-1,S),-Q(i+1,cols,W)]]
+            cnf_clauses += [[-Q(i,cols,N),-Q(i,cols,E),-Q(i-1,cols,E)]]
+            cnf_clauses += [[-Q(i,cols,S),-Q(i,cols,E),-Q(i+1,cols,E)]]
+
+        #Laterales Verticales
+        for j in range (2,cols-1):
+            #Superiores
+            cnf_clauses += [[-Q(1,j,N),-Q(1,j,E),-Q(1,j+1,N)]]
+            cnf_clauses += [[-Q(1,j,N),-Q(1,j,W),-Q(1,j-1,N)]]
+            cnf_clauses += [[-Q(1,j,S),-Q(1,j,E),-Q(1,j+1,S),-Q(2,j,E)]]
+            cnf_clauses += [[-Q(1,j,S),-Q(1,j,W),-Q(1,j-1,S),-Q(2,j,W)]]
+
+            #Inferiores
+            cnf_clauses += [[-Q(rows,j,N),-Q(rows,j,E),-Q(rows,j+1,N),-Q(rows-1,j,E)]]
+            cnf_clauses += [[-Q(rows,j,N),-Q(rows,j,W),-Q(rows,j-1,N),-Q(rows-1,j,E)]]
+            cnf_clauses += [[-Q(rows,j,S),-Q(rows,j,E),-Q(rows,j+1,S)]]
+            cnf_clauses += [[-Q(rows,j,S),-Q(rows,j,W),-Q(rows,j-1,S)]]
+
+        #Esquinas
+        #Estan cubiertas por los laterales V + H
+
+        # Casos internos
+        for i in range(2,rows-1):
+            for j in range(2,cols-1):
+                cnf_clauses += [[-Q(i,j,N),-Q(i,j,E),-Q(i,j+1,N),-Q(i-1,j,E)]]
+                cnf_clauses += [[-Q(i,j,N),-Q(i,j,W),-Q(i,j-1,N),-Q(i-1,j,W)]]
+                cnf_clauses += [[-Q(i,j,S),-Q(i,j,E),-Q(i,j+1,S),-Q(i+1,j,E)]]
+                cnf_clauses += [[-Q(i,j,S),-Q(i,j,W),-Q(i,j-1,S),-Q(i+1,j,W)]]
 
 
 
