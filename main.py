@@ -5,7 +5,6 @@ from enum import Enum
 debug = True
 
 class Dir(Enum):
-    belongs = 0
     north = 1
     west  = 2
     east  = 3
@@ -29,7 +28,7 @@ class Clause(object):
         return self
 
     def __neg__(self):
-        self.negate()
+        return self.negate()
 
     def to_tuple(self):
         pass
@@ -41,6 +40,7 @@ class Clause(object):
         try:
             i = universe.index(my_tup)
         except:
+            global universe
             universe = list(universe)
             i = universe.index(my_tup) 
 
@@ -85,64 +85,44 @@ class Q(Clause):
         # Necesario para que las clausulas tengan identificador unico
         return (self.i,self.j,self.dir)
 
-    # def __repr__(self):
-    #     return (self.i,self.j,self.dir,self.neg)
-
-    def get_sat_val(self):
-        # Solo se usar al final, afecta a la variable estatica global
-        # Obtiene el valor unico de una clausula para minisat
-        my_tup = self.to_tuple()
-        try:
-            i = universe.index(my_tup)
-        except:
-            global universe
-            universe = list(universe)
-            i = universe.index(my_tup) 
-
-        return (self.neg * (i+1) )
 
 
-class Z(Clause):
 
-    def __init__(self,i,j,add=True):
+class IjClause(Clause):
+
+    def __init__(self,i,j,t,add=True):
         # Clausula de tipo q(fila,columna,direccion, agregar_al_universo)
-        super(Z,self).__init__(i,j,add)
-
-        # Add to universe and get unique id (for sat)
-        # print(universe)
-        if add:
-            universe.add(self.to_tuple())
-        # print("despues")
-        # print(universe)
-
+        self.type = t
+        super(IjClause,self).__init__(i,j,add)
 
     def __str__(self):
         # Representacion como string
         neg = "-" if (self.neg ==-1) else ""
-        res = ( neg +"z("+ str(self.i) + "," + 
+        res = ( neg + self.type +"("+ str(self.i) + "," + 
                            str(self.j) + ")")
         return res
 
     def to_tuple(self):
         # Necesario para que las clausulas tengan identificador unico
-        return (self.i,self.j)
+        return (self.i,self.j,self.type)
 
-    # def __repr__(self):
-    #     return (self.i,self.j,self.dir,self.neg)
 
-    def get_sat_val(self):
-        # Solo se usar al final, afecta a la variable estatica global
-        # Obtiene el valor unico de una clausula para minisat
-        my_tup = self.to_tuple()
-        try:
-            i = universe.index(my_tup)
-        except:
-            global universe
-            universe = list(universe)
-            i = universe.index(my_tup) 
+class Z(IjClause):
+    def __init__(self,i,j,add=True):
+        # Clausula de tipo q(fila,columna,direccion, agregar_al_universo)
+        super(Z,self).__init__(i,j,'z',add)
 
-        return (self.neg * (i+1) )
-    
+        if add:
+            universe.add(self.to_tuple())
+
+class R(IjClause):
+    def __init__(self,i,j,add=True):
+        # Clausula de tipo q(fila,columna,direccion, agregar_al_universo)
+        super(R,self).__init__(i,j,'r',add)
+
+        if add:
+            universe.add(self.to_tuple())
+
 
 
 # Read from IO representation
@@ -183,7 +163,7 @@ for i,line in enumerate(rep,1):
         if   (case == 0):
             # Remove all edges
             for d in Dir:
-                cnf_clauses += [ [ Q(i,j,d).negate() ] ]
+                cnf_clauses += [ [ -Q(i,j,d) ] ]
         elif (case == 1):
             # Add any of the edges
             cnf_clauses += [ [ Q(i,j,d) for d in Dir ] ]
@@ -191,23 +171,23 @@ for i,line in enumerate(rep,1):
             for d1 in Dir:
                 for d2 in Dir:
                     if (d1.value < d2.value):
-                        cnf_clauses +=[ [ Q(i,j,d1).negate() 
-                                       , Q(i,j,d2).negate() ] ]
+                        cnf_clauses +=[ [ -Q(i,j,d1) 
+                                        , -Q(i,j,d2) ] ]
             pass                                       
         elif (case == 2):
             # Todas las formas de tener dos aristas de un cuadro en cnf
             # ( !E ||  !n ||  !s) && ( !E ||  !n ||  !w) && ( !E ||  !s ||  !w) && (E || n || s) && (E || n || w) && (E || s || w) && ( !n ||  !s ||  !w) && (n || s || w)
-            cnf_clauses += [[Q(i,j,Dir.east).negate()
-                            ,Q(i,j,Dir.north).negate()
-                            ,Q(i,j,Dir.south).negate()]]
+            cnf_clauses += [[-Q(i,j,Dir.east)
+                            ,-Q(i,j,Dir.north)
+                            ,-Q(i,j,Dir.south)]]
 
-            cnf_clauses += [[Q(i,j,Dir.east).negate()
-                            ,Q(i,j,Dir.north).negate()
-                            ,Q(i,j,Dir.west).negate()]]
+            cnf_clauses += [[-Q(i,j,Dir.east)
+                            ,-Q(i,j,Dir.north)
+                            ,-Q(i,j,Dir.west)]]
 
-            cnf_clauses += [[Q(i,j,Dir.east).negate()
-                            ,Q(i,j,Dir.south).negate()
-                            ,Q(i,j,Dir.west).negate()]]
+            cnf_clauses += [[-Q(i,j,Dir.east)
+                            ,-Q(i,j,Dir.south)
+                            ,-Q(i,j,Dir.west)]]
 
             cnf_clauses += [[Q(i,j,Dir.east)
                             ,Q(i,j,Dir.north)
@@ -221,9 +201,9 @@ for i,line in enumerate(rep,1):
                             ,Q(i,j,Dir.south)
                             ,Q(i,j,Dir.west)]]
 
-            cnf_clauses += [[Q(i,j,Dir.north).negate()
-                            ,Q(i,j,Dir.south).negate()
-                            ,Q(i,j,Dir.west).negate()]]
+            cnf_clauses += [[-Q(i,j,Dir.north)
+                            ,-Q(i,j,Dir.south)
+                            ,-Q(i,j,Dir.west)]]
 
             cnf_clauses += [[Q(i,j,Dir.north)
                             ,Q(i,j,Dir.south)
@@ -231,7 +211,7 @@ for i,line in enumerate(rep,1):
 
         elif (case == 3):
             # Add all edges but one
-            cnf_clauses += [ [ Q(i,j,d).negate() for d in Dir ] ]
+            cnf_clauses += [ [ (-Q(i,j,d)) for d in Dir ] ]
 
             for d1 in Dir:
                 for d2 in Dir:
@@ -288,7 +268,6 @@ for i,line in enumerate(rep,1):
         # if ( (i == 1) and (1 <= j and j <= M) ):
         #     cnf_clauses += [ [Q(1,j,Dir.west),Z(1,j)] ]
         #     cnf_clauses += [-Z(1,j),-Q(1,j,Dir.west)]
-
             # if ( (i == N) and (1 <= j and j <= M) ):
             #     q(N,j,e) v z(N,j) and
             #     -z(N,j) v -q(N,j,e)
@@ -370,6 +349,7 @@ for i,line in enumerate(rep,1):
         # q(i,j,N) and q(i,j,E) => (¬q(i,j+1,N) or ¬q(i-1,j,E))
         #( P && Q => (~R || ~W))
         #((¬P || ¬Q ) or (~R || ~W))
+        #COMENTAR SI ALGO NO FURULA
         for i in range(1,rows-1):
             for j in range(1,cols-1):
                 cnf_clauses += [[Q(i,j,N).negate(),Q(i,j,E).negate(),Q(i,j+1,N).negate(),Q(i-1,j,E).negate()]]
@@ -387,6 +367,7 @@ if debug:
     for i in range(0,6):
         print(".",end=" ")
     print("\n\n")
+
 
 if debug:
     # Mostrando clausulas con nuestro tipo de datos
@@ -406,6 +387,7 @@ f = open('int_file', 'w')
 def print_sat_clause(x):
     # Mostrando respuestas tipo cnf
     for i in x:
+        print(str(i))
         f.write(str(i.get_sat_val()))
         f.write(" ")
     f.write("0\n")
@@ -437,20 +419,37 @@ call(["./miniSat","int_file","salida.txt"],stdout=devnull)
 with open('salida.txt', 'r') as myfile:
     data=myfile.read()
 
+def get_dir(object):
+    try:
+        res = c.dir.name[0]
+    except Exception as e:
+        res = c.type
+
+    return res
+
 # Iterate results
 try:
     result = []
     for i in (data.split("\n")[1].split()[:-1]):
         # Convert int result to clauses back again
         (r,c,d) = universe[abs(int(i))-1]
-        c = Q(r,c,d,False)
-        if int(i) < 0:
-            c.negate()
+        if isinstance(d,Dir):
+            c = Q(r,c,d,False)
 
-        result += [c]
+            if int(i) < 0:
+                c.negate()
+            
+            result += [c]
+        else:
+            if (d=="r"):
+                c = R(r,c,False)
+            else:
+                c = Z(r,c,False)
+
 
     # Sort result, first by row, direction, and column at last
     from operator import attrgetter
+
     s0 = sorted(result,key=attrgetter("j"))
     s1 = sorted(s0,key=lambda c: c.dir.value )
     s2 = sorted(s1,key=attrgetter("i"))
@@ -476,7 +475,7 @@ try:
                 if (j > 1 and (d is Dir.west)):
                     break
 
-                if (s2[index].to_tuple() == (i,j,d)):
+                if ((s2[index].to_tuple() == (i,j,d))):
                     if (s2[index].neg == 1):
                         print(1,end="")
                     else:
