@@ -28,35 +28,36 @@ class Clause(object):
             Clause.universe.add(self.to_tuple())
 
     def getOposite(self,N,M):
+        print('leroy')
         print(self.dir.value)
         if self.dir.value == 1:
-            if self.j-1 > 0:
-                if self.neg:
-                    return Clause(self.i,self.j-1,Dir.south).negate()
-                else:
-                    return Clause(self.i,self.j-1,Dir.south)
-
-        elif self.dir.value == 2:
             if self.i-1 > 0:
                 if self.neg:
-                    return Clause(self.i-1,self.j,Dir.east).negate()
+                    return [Clause(self.i-1,self.j,Dir.south).negate()]
                 else:
-                    return Clause(self.i-1,self.j,Dir.east)
-                
-        elif self.dir.value == 3:
+                    return [Clause(self.i-1,self.j,Dir.south)]
+        elif self.dir.value == 4:
             if self.i+1 <= N:
                 if self.neg:
-                    return Clause(self.i+1,self.j,Dir.west).negate()
+                    return [Clause(self.i+1,self.j,Dir.north).negate()]
                 else:
-                    return Clause(self.i+1,self.j,Dir.west) 
-
-        elif self.dir == 4:
+                    return [Clause(self.i+1,self.j,Dir.north)]
+        elif self.dir.value == 2:
+            if self.j-1 > 0:
+                if self.neg:
+                    return [Clause(self.i,self.j-1,Dir.east).negate()]
+                else:
+                    return [Clause(self.i,self.j-1,Dir.east)]
+                
+        elif self.dir.value == 3:
+            print('Case3!')
             if self.j+1 <= M:
                 if self.neg:
-                    return Clause(self.i,self.j+1,Dir.north).negate()
+                    print(self.dir)
+                    return [Clause(self.i,self.j+1,Dir.west).negate()]
                 else:
-                    return Clause(self.i,self.j+1,Dir.north)
-                
+                    return [Clause(self.i,self.j+1,Dir.west)] 
+
         else:
             return None
 
@@ -240,12 +241,12 @@ for i,line in enumerate(rep,1):
 
     if debug:
         print()
-
+cnf_clauses+= [[Clause(2,2,Dir.south)]]
 for c in list(filter(lambda x: len(x) <= 1, cnf_clauses)):
     aux = c[0].getOposite(rows,cols)
     if aux:
         print('Im In')
-        cnf_clauses += [[aux]]
+        cnf_clauses += [aux]
 # Fin del cuadro
 if debug:
     for i in range(0,6):
