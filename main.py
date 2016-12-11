@@ -272,6 +272,8 @@ for i,line in enumerate(rep,1):
                  [Z(i,j) , Q(i,j,S) ,  -Z(i,j-1)] ,
                  [Z(i,j) ,  -Z(i-1,j) , Q(i,j,W)]]
 
+    if debug:
+        print()
 
 
         # M = 5 # ?
@@ -359,50 +361,53 @@ for i,line in enumerate(rep,1):
         #(1,1)
         #(¬q(1,1,N) and ¬q(1,1,W)) V (q(1,1,N) and q(1,1,W))
         #CNF
-        (¬q(1,1,N) ∨ q(1,1,W)) ∧
-        (q(1,1,N) ∨ ¬q(1,1,W))
+n = rows+1
+m = cols+1
 
-        #(n+1,1)
-        #(¬q(n,1,N) and ¬q(n,1,E)) V (q(n,1,N) and q(n,1,E))
-        #CNF
-        (¬q(n,1,N) ∨ q(n,1,E)) ∧
-        (q(n,1,N) ∨ ¬q(n,1,E))
+cnf_clauses+=[
+     [-Q(1,1,N) , Q(1,1,W)]
+    ,[Q(1,1,N) , -Q(1,1,W)]
 
-        #(1,m+1)
-        #(¬q(1,m,S) and ¬q(1,m,W)) V (q(1,m,S) and q(1,m,W))
-        #CNF
-        (¬q(1,m,S) ∨ q(1,m,W)) ∧
-        (q(1,m,S) ∨ ¬q(1,m,W))
+    #(n+1,1)
+    #(¬Q(n,1,N) and ¬Q(n,1,E)) V (Q(n,1,N) and Q(n,1,E))
+    #CNF
+    ,[-Q(n,1,N) , Q(n,1,E)]
+    ,[Q(n,1,N) , -Q(n,1,E)]
 
-        #(n+1,m+1)
-        #(¬q(n,m,S) and ¬q(n,m,E)) V (q(n,m,S) and q(n,m,E))
-        #CNF
-        (¬q(n,m,S) ∨ q(n,m,E)) ∧
-        (q(n,m,S) ∨ ¬q(n,m,E))
+    #(1,m+1)
+    #(¬Q(1,m,S) and ¬Q(1,m,W)) V (Q(1,m,S) and Q(1,m,W))
+    #CNF
+    ,[-Q(1,m,S) , Q(1,m,W)]
+    ,[Q(1,m,S) , -Q(1,m,W)]
 
-        #borde superior sin puntos esquina
-        #PUNTOS: 2<=i<=n j=1
-        # (¬q(i,1,N) && ¬q(i,1,W) && ¬q(i-1,1,N)) || (q(i,1,N) && q(i,1,W) && ¬q(i-1,1,N)) ||
-        # (q(i,1,N) && ¬q(i,1,W) && q(i-1,1,N)) || (¬q(i,1,N) && q(i,1,W) && q(i-1,1,N))
-        #CNF
-        (¬q(i,1,N) ∨ ¬q(i,1,W) ∨ ¬q(i-1,1,N)) ∧
-        (¬q(i,1,N) ∨ q(i,1,W) ∨ q(i-1,1,N)) ∧
-        (q(i,1,N) ∨ ¬q(i,1,W) ∨ q(i-1,1,N)) ∧
-        (q(i,1,N) ∨ q(i,1,W) ∨ ¬q(i-1,1,N))
+    #(n+1,m+1)
+    #(¬Q(n,m,S) and ¬Q(n,m,E)) V (Q(n,m,S) and Q(n,m,E))
+    #CNF
+    ,[-Q(n,m,S) , Q(n,m,E)]
+    ,[Q(n,m,S) , -Q(n,m,E)]
 
-        #borde inferior sin puntos esquina
+    #borde superior sin puntos esQuina
+    #PUNTOS: 2<=i<=n j=1
+    # (¬Q(i,1,N) && ¬Q(i,1,W) && ¬Q(i-1,1,N)) || (Q(i,1,N) && Q(i,1,W) && ¬Q(i-1,1,N)) ||
+    # (Q(i,1,N) && ¬Q(i,1,W) && Q(i-1,1,N)) || (¬Q(i,1,N) && Q(i,1,W) && Q(i-1,1,N))
+    #CNF
+    ,[-Q(i,1,N) , -Q(i,1,W) , -Q(i-1,1,N)]
+    ,[-Q(i,1,N) ,  Q(i,1,W) ,  Q(i-1,1,N)]
+    ,[ Q(i,1,N) , -Q(i,1,W) ,  Q(i-1,1,N)]
+    ,[ Q(i,1,N) ,  Q(i,1,W) , -Q(i-1,1,N)]
+    ]
 
-        #borde derecho sin puntos esquina
+#borde inferior sin puntos esquina
 
-        #borde izquierdo sin puntos esquina
+#borde derecho sin puntos esquina
 
-        #resto de los puntos
+#borde izquierdo sin puntos esquina
+
+#resto de los puntos
         
 
 
 
-    if debug:
-        print()
 
 
 
@@ -444,7 +449,7 @@ f.write("c\n")
 f.write("c    horn? no \n")
 f.write("c    forced? no \n")
 f.write("c    mixed sat? no \n")
-f.write("c    clause length = 3 \n")
+f.write("c    clause length = 5 \n")
 f.write("c\n")
 f.write("p cnf {} {}\n".format(len(universe),len(cnf_clauses)))
 
