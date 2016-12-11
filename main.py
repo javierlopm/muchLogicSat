@@ -264,6 +264,16 @@ for i,line in enumerate(rep,1):
                  [ -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) , Z(i-1,j)] ,
                  [ -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) ,  -Q(i,j,W)] ]
 
+                 #(<=)
+                 #(E || P ||  !T) && (N || P ||  !R) && (P || S ||  !U) && (P ||  !V || W)
+
+                cnf_clauses+=[[Q(i,j,E) , Z(i,j) ,  -Z(i+1,j)] ,
+                 [Q(i,j,N) , Z(i,j) ,  -Z(i,j+1)] ,
+                 [Z(i,j) , Q(i,j,S) ,  -Z(i,j-1)] ,
+                 [Z(i,j) ,  -Z(i-1,j) , Q(i,j,W)]]
+
+
+
         # M = 5 # ?
         # if ( (i == 1) and (1 <= j and j <= M) ):
         #     cnf_clauses += [ [Q(1,j,Dir.west),Z(1,j)] ]
