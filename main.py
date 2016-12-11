@@ -293,8 +293,8 @@ for i,line in enumerate(rep,1):
 
     cnf_clauses += [[ R(i,j,i,j) ]]
 
-    for x in range(rows):
-        for y in range(cols):
+    for x in range(1,rows+1):
+        for y in range(1,cols+1):
             #North
             #r(c(i,j),c(x,y)) and -q(c(x,y),N) => r(c(i,j),c(x,y-1))
             if (y != 1):
