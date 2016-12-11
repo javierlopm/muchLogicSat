@@ -11,22 +11,54 @@ class Dir(Enum):
     east  = 3
     south = 4
 
-class Clause(object):
-    # Universo de clausulas con valores unicos
-    universe = set()
+# Universo de clausulas con valores unicos
+universe = set()
 
-    def __init__(self,i,j,d,add=True):
+class Clause(object):
+    
+
+    def __init__(self,i,j,add=True):
         # Clausula de tipo q(fila,columna,direccion, agregar_al_universo)
         self.i   = i
         self.j   = j
-        self.dir = d
         self.neg = 1
 
+    def negate(self):
+        # Negado de una clausula
+        self.neg = - self.neg
+        return self
+
+    def __neg__(self):
+        self.negate()
+
+    def to_tuple(self):
+        pass
+
+    def get_sat_val(self):
+        # Solo se usar al final, afecta a la variable estatica global
+        # Obtiene el valor unico de una clausula para minisat
+        my_tup = self.to_tuple()
+        try:
+            i = universe.index(my_tup)
+        except:
+            universe = list(universe)
+            i = universe.index(my_tup) 
+
+        return (self.neg * (i+1) )
+
+class Q(Clause):
+    # Universo de clausulas con valores unicos
+
+    def __init__(self,i,j,d,add=True):
+        # Clausula de tipo q(fila,columna,direccion, agregar_al_universo)
+        self.dir = d
+        super(Q,self).__init__(i,j,add)
         self.unify_rep()
 
         # Add to universe and get unique id (for sat)
         if add:
-            Clause.universe.add(self.to_tuple())
+            universe.add(self.to_tuple())
+
 
     def unify_rep(self):
         # Convierte a cualquier clausula en su version
@@ -39,11 +71,6 @@ class Clause(object):
         if (self.dir == Dir.north and self.i > 1):
             self.i  -= 1
             self.dir = Dir.south
-        return self
-
-    def negate(self):
-        # Negado de una clausula
-        self.neg = - self.neg
         return self
 
     def __str__(self):
@@ -66,24 +93,55 @@ class Clause(object):
         # Obtiene el valor unico de una clausula para minisat
         my_tup = self.to_tuple()
         try:
-            i = Clause.universe.index(my_tup)
+            i = universe.index(my_tup)
         except:
-            Clause.universe = list(Clause.universe)
-            i = Clause.universe.index(my_tup) 
+            global universe
+            universe = list(universe)
+            i = universe.index(my_tup) 
 
         return (self.neg * (i+1) )
 
-    # @staticmethod
-    # def get_clause(cnf_form,signs):
-    #     pass
-    #     # for i in xrange(0,6):
-    #     #     for j in xrange(0,6):
-    #     #         for d in dir
-    #     #         for (x,y,di) in clause:
-    #     #             if (i==x) and (j==y):
-                        
-    #     #                 break
-    #     # return 1
+
+class Z(Clause):
+
+    def __init__(self,i,j,add=True):
+        # Clausula de tipo q(fila,columna,direccion, agregar_al_universo)
+        super(Z,self).__init__(i,j,add)
+
+        # Add to universe and get unique id (for sat)
+        # print(universe)
+        if add:
+            universe.add(self.to_tuple())
+        # print("despues")
+        # print(universe)
+
+
+    def __str__(self):
+        # Representacion como string
+        neg = "-" if (self.neg ==-1) else ""
+        res = ( neg +"z("+ str(self.i) + "," + 
+                           str(self.j) + ")")
+        return res
+
+    def to_tuple(self):
+        # Necesario para que las clausulas tengan identificador unico
+        return (self.i,self.j)
+
+    # def __repr__(self):
+    #     return (self.i,self.j,self.dir,self.neg)
+
+    def get_sat_val(self):
+        # Solo se usar al final, afecta a la variable estatica global
+        # Obtiene el valor unico de una clausula para minisat
+        my_tup = self.to_tuple()
+        try:
+            i = universe.index(my_tup)
+        except:
+            global universe
+            universe = list(universe)
+            i = universe.index(my_tup) 
+
+        return (self.neg * (i+1) )
     
 
 
@@ -93,8 +151,8 @@ class Clause(object):
 # Entrada fija
 in_str = "5 5 ..32. 222.3 0..1. 2.2.. .2323"
 toks   = in_str.split()
-rows = toks[0]
-cols = toks[1]
+rows = int(toks[0]) #modificado
+cols = int(toks[1]) #modificado
 rep = toks[2:]
 
 
@@ -125,147 +183,149 @@ for i,line in enumerate(rep,1):
         if   (case == 0):
             # Remove all edges
             for d in Dir:
-                cnf_clauses += [ [ Clause(i,j,d).negate() ] ]
+                cnf_clauses += [ [ Q(i,j,d).negate() ] ]
         elif (case == 1):
             # Add any of the edges
-            cnf_clauses += [ [ Clause(i,j,d) for d in Dir ] ]
+            cnf_clauses += [ [ Q(i,j,d) for d in Dir ] ]
 
             for d1 in Dir:
                 for d2 in Dir:
                     if (d1.value < d2.value):
-                        cnf_clauses +=[ [ Clause(i,j,d1).negate() 
-                                       , Clause(i,j,d2).negate() ] ]
+                        cnf_clauses +=[ [ Q(i,j,d1).negate() 
+                                       , Q(i,j,d2).negate() ] ]
             pass                                       
         elif (case == 2):
             # Todas las formas de tener dos aristas de un cuadro en cnf
             # ( !E ||  !n ||  !s) && ( !E ||  !n ||  !w) && ( !E ||  !s ||  !w) && (E || n || s) && (E || n || w) && (E || s || w) && ( !n ||  !s ||  !w) && (n || s || w)
-            cnf_clauses += [[Clause(i,j,Dir.east).negate()
-                            ,Clause(i,j,Dir.north).negate()
-                            ,Clause(i,j,Dir.south).negate()]]
+            cnf_clauses += [[Q(i,j,Dir.east).negate()
+                            ,Q(i,j,Dir.north).negate()
+                            ,Q(i,j,Dir.south).negate()]]
 
-            cnf_clauses += [[Clause(i,j,Dir.east).negate()
-                            ,Clause(i,j,Dir.north).negate()
-                            ,Clause(i,j,Dir.west).negate()]]
+            cnf_clauses += [[Q(i,j,Dir.east).negate()
+                            ,Q(i,j,Dir.north).negate()
+                            ,Q(i,j,Dir.west).negate()]]
 
-            cnf_clauses += [[Clause(i,j,Dir.east).negate()
-                            ,Clause(i,j,Dir.south).negate()
-                            ,Clause(i,j,Dir.west).negate()]]
+            cnf_clauses += [[Q(i,j,Dir.east).negate()
+                            ,Q(i,j,Dir.south).negate()
+                            ,Q(i,j,Dir.west).negate()]]
 
-            cnf_clauses += [[Clause(i,j,Dir.east)
-                            ,Clause(i,j,Dir.north)
-                            ,Clause(i,j,Dir.south)]]
+            cnf_clauses += [[Q(i,j,Dir.east)
+                            ,Q(i,j,Dir.north)
+                            ,Q(i,j,Dir.south)]]
 
-            cnf_clauses += [[Clause(i,j,Dir.east)
-                            ,Clause(i,j,Dir.north)
-                            ,Clause(i,j,Dir.west)]]
+            cnf_clauses += [[Q(i,j,Dir.east)
+                            ,Q(i,j,Dir.north)
+                            ,Q(i,j,Dir.west)]]
 
-            cnf_clauses += [[Clause(i,j,Dir.east)
-                            ,Clause(i,j,Dir.south)
-                            ,Clause(i,j,Dir.west)]]
+            cnf_clauses += [[Q(i,j,Dir.east)
+                            ,Q(i,j,Dir.south)
+                            ,Q(i,j,Dir.west)]]
 
-            cnf_clauses += [[Clause(i,j,Dir.north).negate()
-                            ,Clause(i,j,Dir.south).negate()
-                            ,Clause(i,j,Dir.west).negate()]]
+            cnf_clauses += [[Q(i,j,Dir.north).negate()
+                            ,Q(i,j,Dir.south).negate()
+                            ,Q(i,j,Dir.west).negate()]]
 
-            cnf_clauses += [[Clause(i,j,Dir.north)
-                            ,Clause(i,j,Dir.south)
-                            ,Clause(i,j,Dir.west)]]
+            cnf_clauses += [[Q(i,j,Dir.north)
+                            ,Q(i,j,Dir.south)
+                            ,Q(i,j,Dir.west)]]
 
         elif (case == 3):
             # Add all edges but one
-            cnf_clauses += [ [ Clause(i,j,d).negate() for d in Dir ] ]
+            cnf_clauses += [ [ Q(i,j,d).negate() for d in Dir ] ]
 
             for d1 in Dir:
                 for d2 in Dir:
                     if (d1.value < d2.value):
-                        cnf_clauses += [ [ Clause(i,j,d1) , Clause(i,j,d2) ] ]
+                        cnf_clauses += [ [ Q(i,j,d1) , Q(i,j,d2) ] ]
         elif (case == 4):
             # Add all edges
             for d in Dir:
-                cnf_clauses += [ [ Clause(i,j,d) ] ]
+                cnf_clauses += [ [ Q(i,j,d) ] ]
 
 
-        # ####COMENTAR DESDE ACA PARA QUE CORRA
-        # ## Esta todo en cnf falta decidir como representaremos r y z dado que tienen que ser variables/constantes diferentes a las q
-        # ##todo sigue dendro del doble ciclo para i,j
+        ####COMENTAR DESDE ACA PARA QUE CORRA
+        ## Esta todo en cnf falta decidir como representaremos r y z dado que tienen que ser variables/constantes diferentes a las q
+        ##todo sigue dendro del doble ciclo para i,j
 
-        # # Interior vs exterior clauses
+        # Interior vs exterior clauses
+        # M = 5 # ?
+        # if ( (i == 1) and (1 <= j and j <= M) ):
+        #     cnf_clauses += [ [Q(1,j,Dir.west),Z(1,j)] ]
+        #     cnf_clauses += [-Z(1,j),-Q(1,j,Dir.west)]
 
-        #     if ( (i == 1) and (1 <= j and j <= M) ):
-        #         q(1,j,w) v z(1,j) and
-        #         -z(1,j) v -q(1,j,w)
+            # if ( (i == N) and (1 <= j and j <= M) ):
+            #     q(N,j,e) v z(N,j) and
+            #     -z(N,j) v -q(N,j,e)
 
-        #     if ( (i == N) and (1 <= j and j <= M) ):
-        #         q(N,j,e) v z(N,j) and
-        #         -z(N,j) v -q(N,j,e)
+            # if ( (1 <= i and i <= N) and (j == 1) ):
+            #     q(i,1,s) v z(i,1) and
+            #     -z(i,1) v -q(i,1,s)
 
-        #     if ( (1 <= i and i <= N) and (j == 1) ):
-        #         q(i,1,s) v z(i,1) and
-        #         -z(i,1) v -q(i,1,s)
+            # if ( (1 <= i and i <= N) and (j == M) ):
+            #     q(i,M,n) v z(i,M) and
+            #     -z(i,M) v -q(i,M,n)
 
-        #     if ( (1 <= i and i <= N) and (j == M) ):
-        #         q(i,M,n) v z(i,M) and
-        #         -z(i,M) v -q(i,M,n)
-
-        #     if ((1 < i and i< N) and (1 < j and j< M)):
-        #         #-z(i,j) v [-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)]
-        #         #CNF
-        #         (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s))
-        #         (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ z(i,j-1))
-        #         (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ ¬q(i,j,s))
-        #         (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ z(i,j-1))
-        #         (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s))
-        #         (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ z(i,j-1))
-        #         (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ ¬q(i,j,s))
-        #         (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ z(i,j-1))
-        #         (¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-        #         (¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ z(i,j-1) ∨ ¬q(i,j,w))
-        #         (¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-        #         (¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ z(i,j-1) ∨ ¬q(i,j,w))
-        #         (¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-        #         (¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ z(i,j-1) ∨ ¬q(i,j,w))
-        #         (¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-        #         (¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ z(i,j-1) ∨ ¬q(i,j,w))
+            # if ((1 < i and i< N) and (1 < j and j< M)):
+            #     #-z(i,j) v [-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)]
+            #     #CNF
+            #     (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s))
+            #     (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ z(i,j-1))
+            #     (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ ¬q(i,j,s))
+            #     (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ z(i,j-1))
+            #     (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s))
+            #     (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ z(i,j-1))
+            #     (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ ¬q(i,j,s))
+            #     (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ z(i,j-1))
+            #     (¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
+            #     (¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ z(i,j-1) ∨ ¬q(i,j,w))
+            #     (¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
+            #     (¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ z(i,j-1) ∨ ¬q(i,j,w))
+            #     (¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
+            #     (¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ z(i,j-1) ∨ ¬q(i,j,w))
+            #     (¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
+            #     (¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ z(i,j-1) ∨ ¬q(i,j,w))
                 
-        #         #[-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)] => z(i,j)
-        #         #CNF
-        #         (¬z(i-1,j) ∨ ¬z(i,j) ∨ q(i,j,w))
-        #         (¬z(i,j) ∨ q(i,j,n) ∨ ¬z(i,j+1))
-        #         (¬z(i,j) ∨ q(i,j,e) ∨ ¬z(i+1,j))
-        #         (¬z(i,j) ∨ q(i,j,s) ∨ ¬z(i,j-1))
+            #     #[-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)] => z(i,j)
+            #     #CNF
+            #     (¬z(i-1,j) ∨ ¬z(i,j) ∨ q(i,j,w))
+            #     (¬z(i,j) ∨ q(i,j,n) ∨ ¬z(i,j+1))
+            #     (¬z(i,j) ∨ q(i,j,e) ∨ ¬z(i+1,j))
+            #     (¬z(i,j) ∨ q(i,j,s) ∨ ¬z(i,j-1))
 
-        # # Reachable cells
-        #     #r(c,c)
-        #     r(c(i,j),c(i,j))
+            # Reachable cells
+            #r(c,c)
+            # r(c(i,j),c(i,j))
 
-        #     for x in range(N):
-        #         for y in range(M):
-        #             #North
-        #             #r(c(i,j),c(x,y)) and -q(c(x,y),N) => r(c(i,j),c(x,y-1))
-        #             if (y != 1):
-        #                 ¬r(c(i,j),c(x,y)) v q(c(x,y),N) v r(c(i,j),c(x,y-1))
+            # for x in range(N):
+            #     for y in range(M):
+            #         #North
+            #         #r(c(i,j),c(x,y)) and -q(c(x,y),N) => r(c(i,j),c(x,y-1))
+            #         if (y != 1):
+            #             ¬r(c(i,j),c(x,y)) v q(c(x,y),N) v r(c(i,j),c(x,y-1))
 
-        #             #South
-        #             #r(c(i,j),c(x,y)) and -q(c(x,y),S) => r(c(i,j),c(x,y+1))
-        #             if (y != M):
-        #                 ¬r(c(i,j),c(x,y)) v q(c(x,y),S) v r(c(i,j),c(x,y+1))
+            #         #South
+            #         #r(c(i,j),c(x,y)) and -q(c(x,y),S) => r(c(i,j),c(x,y+1))
+            #         if (y != M):
+            #             ¬r(c(i,j),c(x,y)) v q(c(x,y),S) v r(c(i,j),c(x,y+1))
 
-        #             #East
-        #             #r(c(i,j),c(x,y)) and -q(c(x,y),E) => r(c(i,j),c(x+1,y))
-        #             if (x != N):
-        #                 ¬r(c(i,j),c(x,y)) v q(c(x,y),E) v r(c(i,j),c(x+1,y))
+            #         #East
+            #         #r(c(i,j),c(x,y)) and -q(c(x,y),E) => r(c(i,j),c(x+1,y))
+            #         if (x != N):
+            #             ¬r(c(i,j),c(x,y)) v q(c(x,y),E) v r(c(i,j),c(x+1,y))
 
-        #             #West
-        #             #r(c(i,j),c(x,y)) and -q(c(x,y),W) => r(c(i,j),c(x-1,y))
-        #             if (y != M):
-        #                 ¬r(c(i,j),c(x,y)) v q(c(x,y),W) v r(c(i,j),c(x-1,y))
+            #         #West
+            #         #r(c(i,j),c(x,y)) and -q(c(x,y),W) => r(c(i,j),c(x-1,y))
+            #         if (y != M):
+            #             ¬r(c(i,j),c(x,y)) v q(c(x,y),W) v r(c(i,j),c(x-1,y))
 
-        # # Interior cells reachable
-        # #z(c) & z(c') => r(c,c')
-        #     for x in range(N):
-        #         for y in range(M):
-        #             ¬z(i,j) v ¬z(x,y) v r(c(i,j),c(x,y))
+            # Interior cells reachable
+            #z(c) & z(c') => r(c,c')
+            # for x in range(N):
+            #     for y in range(M):
+            #         ¬z(i,j) v ¬z(x,y) v r(c(i,j),c(x,y))
 
+
+        
 
 
         #Adjacent segments
@@ -274,18 +334,21 @@ for i,line in enumerate(rep,1):
         S=Dir.south
         E=Dir.east
         W=Dir.west
-        # q(i,j,N) and q(i,j,E) => (¬q(i,j+1,N) or ¬q(i-1,j,W))
+        # q(i,j,N) and q(i,j,E) => (¬q(i,j+1,N) or ¬q(i-1,j,E))
         #( P && Q => (~R || ~W))
         #((¬P || ¬Q ) or (~R || ~W))
-        for i in range(1,rows):
-            for j in range(1,cols):
-                cnf_clauses += [[q(i,j,N).negate(),q(i,j,E).negate(),q(i,j+1,N).negate(),q(i-1,j,E).negate()]]
-                cnf_clauses += [[q(i,j,N).negate(),q(i,j,W).negate(),q(i,j-1,N).negate(),q(i-1,j,W).negate()]]
-                cnf_clauses += [[q(i,j,S).negate(),q(i,j,E).negate(),q(i,j+1,S).negate(),q(i+1,j,E).negate()]]
-                cnf_clauses += [[q(i,j,S).negate(),q(i,j,W).negate(),q(i,j-1,S).negate(),q(i+1,j,W).negate()]]
+        for i in range(1,rows-1):
+            for j in range(1,cols-1):
+                cnf_clauses += [[Q(i,j,N).negate(),Q(i,j,E).negate(),Q(i,j+1,N).negate(),Q(i-1,j,E).negate()]]
+                cnf_clauses += [[Q(i,j,N).negate(),Q(i,j,W).negate(),Q(i,j-1,N).negate(),Q(i-1,j,W).negate()]]
+                cnf_clauses += [[Q(i,j,S).negate(),Q(i,j,E).negate(),Q(i,j+1,S).negate(),Q(i+1,j,E).negate()]]
+                cnf_clauses += [[Q(i,j,S).negate(),Q(i,j,W).negate(),Q(i,j-1,S).negate(),Q(i+1,j,W).negate()]]
 
     if debug:
         print()
+
+
+
 # Fin del cuadro
 if debug:
     for i in range(0,6):
@@ -302,9 +365,10 @@ if debug:
 
     print("\n\n")
 
+
+
 # Call minisat
 f = open('int_file', 'w')
-
 
 def print_sat_clause(x):
     # Mostrando respuestas tipo cnf
@@ -314,6 +378,7 @@ def print_sat_clause(x):
     f.write("0\n")
     # print("diference " + str(4-len(x) ) )
 
+
 # Generando archivo para minisar
 f.write("c This Formular is generated by mcnf\n")
 f.write("c\n")
@@ -322,7 +387,7 @@ f.write("c    forced? no \n")
 f.write("c    mixed sat? no \n")
 f.write("c    clause length = 3 \n")
 f.write("c\n")
-f.write("p cnf {} {}\n".format(len(Clause.universe)+1,len(cnf_clauses)))
+f.write("p cnf {} {}\n".format(len(universe),len(cnf_clauses)))
 
 list(map(print_sat_clause,cnf_clauses))
 
@@ -344,8 +409,8 @@ try:
     result = []
     for i in (data.split("\n")[1].split()[:-1]):
         # Convert int result to clauses back again
-        (r,c,d) = Clause.universe[abs(int(i))-1]
-        c = Clause(r,c,d,False)
+        (r,c,d) = universe[abs(int(i))-1]
+        c = Q(r,c,d,False)
         if int(i) < 0:
             c.negate()
 
