@@ -102,7 +102,7 @@ Para toda celda c=(i,j) con 1 <= i <= N y 1 <= j < M,
 
 q(i,j,n) <=> q(i,j+1,s)
 
-
+(q(i,j,e) => q(i+1,j,w)) and (q(i,j,e) <= q(i+1,j,w))
 Cláusulas tipo 1
 ----------------
 

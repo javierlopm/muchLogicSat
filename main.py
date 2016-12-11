@@ -27,6 +27,39 @@ class Clause(object):
         if add:
             Clause.universe.add(self.to_tuple())
 
+    def getOposite(self,N,M):
+        print(self.dir.value)
+        if self.dir.value == 1:
+            if self.j-1 > 0:
+                if self.neg:
+                    return Clause(self.i,self.j-1,Dir.south).negate()
+                else:
+                    return Clause(self.i,self.j-1,Dir.south)
+
+        elif self.dir.value == 2:
+            if self.i-1 > 0:
+                if self.neg:
+                    return Clause(self.i-1,self.j,Dir.east).negate()
+                else:
+                    return Clause(self.i-1,self.j,Dir.east)
+                
+        elif self.dir.value == 3:
+            if self.i+1 <= N:
+                if self.neg:
+                    return Clause(self.i+1,self.j,Dir.west).negate()
+                else:
+                    return Clause(self.i+1,self.j,Dir.west) 
+
+        elif self.dir == 4:
+            if self.j+1 <= M:
+                if self.neg:
+                    return Clause(self.i,self.j+1,Dir.north).negate()
+                else:
+                    return Clause(self.i,self.j+1,Dir.north)
+                
+        else:
+            return None
+
     def unify_rep(self):
         # Convierte a cualquier clausula en su version
         # con direccion este o norte
@@ -92,8 +125,8 @@ class Clause(object):
 # Entrada fija
 in_str = "5 5 ..32. 222.3 0..1. 2.2.. .2323"
 toks   = in_str.split()
-rows = toks[0]
-cols = toks[1]
+rows = int(toks[0])
+cols = int(toks[1])
 rep = toks[2:]
 
 
@@ -101,7 +134,7 @@ cnf_clauses = []
 
 # Impresion de tablero de forma rápida
 if debug:
-    for i in range(0,6):
+    for i in range(0,rows+1):
         print(".",end=" ")
     print()
 
@@ -125,6 +158,8 @@ for i,line in enumerate(rep,1):
             # Remove all edges
             for d in Dir:
                 cnf_clauses += [ [ Clause(i,j,d).negate() ] ]
+            # Remove adjacent edges
+            # Absorvido por clausula 0
         elif (case == 1):
             # Add any of the edges
             cnf_clauses += [ [ Clause(i,j,d) for d in Dir ] ]
@@ -134,7 +169,7 @@ for i,line in enumerate(rep,1):
                     if (d1.value < d2.value):
                         cnf_clauses +=[ [ Clause(i,j,d1).negate() 
                                        , Clause(i,j,d2).negate() ] ]
-            pass                                       
+
         elif (case == 2):
             # Todas las formas de tener dos aristas de un cuadro en cnf
             # ( !E ||  !n ||  !s) && ( !E ||  !n ||  !w) && ( !E ||  !s ||  !w) && (E || n || s) && (E || n || w) && (E || s || w) && ( !n ||  !s ||  !w) && (n || s || w)
@@ -183,6 +218,17 @@ for i,line in enumerate(rep,1):
             for d in Dir:
                 cnf_clauses += [ [ Clause(i,j,d) ] ]
 
+        # Clausulas tipo 0
+        # P <=> Q 
+        # EN CNF: ((NOT P) OR Q) AND (P OR (NOT Q))
+        if i<rows:
+            cnf_clauses += [[Clause(i,j,Dir.west).negate(),Clause(i+1,j,Dir.east)]]
+            cnf_clauses += [[Clause(i,j,Dir.west),Clause(i+1,j,Dir.east).negate()]]
+
+        if j<cols:
+            cnf_clauses += [[Clause(i,j,Dir.south).negate(),Clause(i,j+1,Dir.north)]]
+            cnf_clauses += [[Clause(i,j,Dir.north),Clause(i,j+1,Dir.south).negate()]]
+
         # Interior vs exterior clauses
         pass
 
@@ -194,6 +240,12 @@ for i,line in enumerate(rep,1):
 
     if debug:
         print()
+
+for c in list(filter(lambda x: len(x) <= 1, cnf_clauses)):
+    aux = c[0].getOposite(rows,cols)
+    if aux:
+        print('Im In')
+        cnf_clauses += [[aux]]
 # Fin del cuadro
 if debug:
     for i in range(0,6):
