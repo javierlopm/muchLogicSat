@@ -116,12 +116,27 @@ class Z(IjClause):
             universe.add(self.to_tuple())
 
 class R(IjClause):
-    def __init__(self,i,j,add=True):
+    def __init__(self,i,j,x,y,add=True):
         # Clausula de tipo q(fila,columna,direccion, agregar_al_universo)
+        self.x = x
+        self.y = y
         super(R,self).__init__(i,j,'r',add)
 
         if add:
             universe.add(self.to_tuple())
+
+    def to_tuple(self):
+        # Necesario para que las clausulas tengan identificador unico
+        return (self.i,self.j,self.type,self.x,self.y)
+
+    def __str__(self):
+        # Representacion como string
+        neg = "-" if (self.neg ==-1) else ""
+        res = ( neg + self.type +"(c("+ str(self.i) + "," + 
+                                       str(self.j)+"),c("+ 
+                                       str(self.x) + "," + 
+                                       str(self.y) + "))")
+        return res
 
 
 
@@ -474,7 +489,6 @@ for i,line in enumerate(rep,1):
                 cnf_clauses += [[-Q(i,j,S),-Q(i,j,W),-Q(i,j-1,S),-Q(i+1,j,W)]]
 
 
-
 # Fin del cuadro
 if debug:
     for i in range(0,6):
@@ -500,7 +514,7 @@ f = open('int_file', 'w')
 def print_sat_clause(x):
     # Mostrando respuestas tipo cnf
     for i in x:
-        print(str(i))
+        # print(str(i))
         f.write(str(i.get_sat_val()))
         f.write(" ")
     f.write("0\n")
@@ -545,8 +559,12 @@ try:
     result = []
     for i in (data.split("\n")[1].split()[:-1]):
         # Convert int result to clauses back again
-        (r,c,d) = universe[abs(int(i))-1]
-        if isinstance(d,Dir):
+        
+        clause = universe[abs(int(i))-1]
+        print(clause)
+
+        if isinstance(clause[2],Dir):
+            (r,c,d) = clause
             c = Q(r,c,d,False)
 
             if int(i) < 0:
@@ -554,9 +572,12 @@ try:
             
             result += [c]
         else:
-            if (d=="r"):
-                c = R(r,c,False)
+
+            if (clause[2]=="r"):
+                (r,c,t,x,y) = clause
+                c = R(r,c,x,y,False)
             else:
+                (r,c,t) = clause
                 c = Z(r,c,False)
 
 
