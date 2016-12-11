@@ -185,92 +185,104 @@ for i,line in enumerate(rep,1):
                 cnf_clauses += [ [ Clause(i,j,d) ] ]
 
 
-        ####COMENTAR DESDE ACA PARA QUE CORRA
-        ## Esta todo en cnf falta decidir como representaremos r y z dado que tienen que ser variables/constantes diferentes a las q
-        ##todo sigue dendro del doble ciclo para i,j
+        # ####COMENTAR DESDE ACA PARA QUE CORRA
+        # ## Esta todo en cnf falta decidir como representaremos r y z dado que tienen que ser variables/constantes diferentes a las q
+        # ##todo sigue dendro del doble ciclo para i,j
 
-        # Interior vs exterior clauses
+        # # Interior vs exterior clauses
 
-            if ( (i == 1) and (1 <= j and j <= M) ):
-                q(1,j,w) v z(1,j) and
-                -z(1,j) v -q(1,j,w)
+        #     if ( (i == 1) and (1 <= j and j <= M) ):
+        #         q(1,j,w) v z(1,j) and
+        #         -z(1,j) v -q(1,j,w)
 
-            if ( (i == N) and (1 <= j and j <= M) ):
-                q(N,j,e) v z(N,j) and
-                -z(N,j) v -q(N,j,e)
+        #     if ( (i == N) and (1 <= j and j <= M) ):
+        #         q(N,j,e) v z(N,j) and
+        #         -z(N,j) v -q(N,j,e)
 
-            if ( (1 <= i and i <= N) and (j == 1) ):
-                q(i,1,s) v z(i,1) and
-                -z(i,1) v -q(i,1,s)
+        #     if ( (1 <= i and i <= N) and (j == 1) ):
+        #         q(i,1,s) v z(i,1) and
+        #         -z(i,1) v -q(i,1,s)
 
-            if ( (1 <= i and i <= N) and (j == M) ):
-                q(i,M,n) v z(i,M) and
-                -z(i,M) v -q(i,M,n)
+        #     if ( (1 <= i and i <= N) and (j == M) ):
+        #         q(i,M,n) v z(i,M) and
+        #         -z(i,M) v -q(i,M,n)
 
-            if ((1 < i and i< N) and (1 < j and j< M)):
-                #-z(i,j) v [-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)]
-                #CNF
-                (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s))
-                (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ z(i,j-1))
-                (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ ¬q(i,j,s))
-                (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ z(i,j-1))
-                (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s))
-                (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ z(i,j-1))
-                (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ ¬q(i,j,s))
-                (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ z(i,j-1))
-                (¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-                (¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ z(i,j-1) ∨ ¬q(i,j,w))
-                (¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-                (¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ z(i,j-1) ∨ ¬q(i,j,w))
-                (¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-                (¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ z(i,j-1) ∨ ¬q(i,j,w))
-                (¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-                (¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ z(i,j-1) ∨ ¬q(i,j,w))
+        #     if ((1 < i and i< N) and (1 < j and j< M)):
+        #         #-z(i,j) v [-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)]
+        #         #CNF
+        #         (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s))
+        #         (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ z(i,j-1))
+        #         (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ ¬q(i,j,s))
+        #         (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ z(i,j-1))
+        #         (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s))
+        #         (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ z(i,j-1))
+        #         (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ ¬q(i,j,s))
+        #         (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ z(i,j-1))
+        #         (¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
+        #         (¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ z(i,j-1) ∨ ¬q(i,j,w))
+        #         (¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
+        #         (¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ z(i,j-1) ∨ ¬q(i,j,w))
+        #         (¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
+        #         (¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ z(i,j-1) ∨ ¬q(i,j,w))
+        #         (¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
+        #         (¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ z(i,j-1) ∨ ¬q(i,j,w))
                 
-                #[-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)] => z(i,j)
-                #CNF
-                (¬z(i-1,j) ∨ ¬z(i,j) ∨ q(i,j,w))
-                (¬z(i,j) ∨ q(i,j,n) ∨ ¬z(i,j+1))
-                (¬z(i,j) ∨ q(i,j,e) ∨ ¬z(i+1,j))
-                (¬z(i,j) ∨ q(i,j,s) ∨ ¬z(i,j-1))
+        #         #[-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)] => z(i,j)
+        #         #CNF
+        #         (¬z(i-1,j) ∨ ¬z(i,j) ∨ q(i,j,w))
+        #         (¬z(i,j) ∨ q(i,j,n) ∨ ¬z(i,j+1))
+        #         (¬z(i,j) ∨ q(i,j,e) ∨ ¬z(i+1,j))
+        #         (¬z(i,j) ∨ q(i,j,s) ∨ ¬z(i,j-1))
 
-        # Reachable cells
-            #r(c,c)
-            r(c(i,j),c(i,j))
+        # # Reachable cells
+        #     #r(c,c)
+        #     r(c(i,j),c(i,j))
 
-            for x in range(N):
-                for y in range(M):
-                    #North
-                    #r(c(i,j),c(x,y)) and -q(c(x,y),N) => r(c(i,j),c(x,y-1))
-                    if (y != 1):
-                        ¬r(c(i,j),c(x,y)) v q(c(x,y),N) v r(c(i,j),c(x,y-1))
+        #     for x in range(N):
+        #         for y in range(M):
+        #             #North
+        #             #r(c(i,j),c(x,y)) and -q(c(x,y),N) => r(c(i,j),c(x,y-1))
+        #             if (y != 1):
+        #                 ¬r(c(i,j),c(x,y)) v q(c(x,y),N) v r(c(i,j),c(x,y-1))
 
-                    #South
-                    #r(c(i,j),c(x,y)) and -q(c(x,y),S) => r(c(i,j),c(x,y+1))
-                    if (y != M):
-                        ¬r(c(i,j),c(x,y)) v q(c(x,y),S) v r(c(i,j),c(x,y+1))
+        #             #South
+        #             #r(c(i,j),c(x,y)) and -q(c(x,y),S) => r(c(i,j),c(x,y+1))
+        #             if (y != M):
+        #                 ¬r(c(i,j),c(x,y)) v q(c(x,y),S) v r(c(i,j),c(x,y+1))
 
-                    #East
-                    #r(c(i,j),c(x,y)) and -q(c(x,y),E) => r(c(i,j),c(x+1,y))
-                    if (x != N):
-                        ¬r(c(i,j),c(x,y)) v q(c(x,y),E) v r(c(i,j),c(x+1,y))
+        #             #East
+        #             #r(c(i,j),c(x,y)) and -q(c(x,y),E) => r(c(i,j),c(x+1,y))
+        #             if (x != N):
+        #                 ¬r(c(i,j),c(x,y)) v q(c(x,y),E) v r(c(i,j),c(x+1,y))
 
-                    #West
-                    #r(c(i,j),c(x,y)) and -q(c(x,y),W) => r(c(i,j),c(x-1,y))
-                    if (y != M):
-                        ¬r(c(i,j),c(x,y)) v q(c(x,y),W) v r(c(i,j),c(x-1,y))
+        #             #West
+        #             #r(c(i,j),c(x,y)) and -q(c(x,y),W) => r(c(i,j),c(x-1,y))
+        #             if (y != M):
+        #                 ¬r(c(i,j),c(x,y)) v q(c(x,y),W) v r(c(i,j),c(x-1,y))
 
-        # Interior cells reachable
-        #z(c) & z(c') => r(c,c')
-            for x in range(N):
-                for y in range(M):
-                    ¬z(i,j) v ¬z(x,y) v r(c(i,j),c(x,y))
+        # # Interior cells reachable
+        # #z(c) & z(c') => r(c,c')
+        #     for x in range(N):
+        #         for y in range(M):
+        #             ¬z(i,j) v ¬z(x,y) v r(c(i,j),c(x,y))
 
 
 
         #Adjacent segments
         #COMENTAR HASTA ACA
-
+        N=Dir.north
+        S=Dir.south
+        E=Dir.east
+        W=Dir.west
+        # q(i,j,N) and q(i,j,E) => (¬q(i,j+1,N) or ¬q(i-1,j,W))
+        #( P && Q => (~R || ~W))
+        #((¬P || ¬Q ) or (~R || ~W))
+        for i in range(1,rows):
+            for j in range(1,cols):
+                cnf_clauses += [[q(i,j,N).negate(),q(i,j,E).negate(),q(i,j+1,N).negate(),q(i-1,j,E).negate()]]
+                cnf_clauses += [[q(i,j,N).negate(),q(i,j,W).negate(),q(i,j-1,N).negate(),q(i-1,j,W).negate()]]
+                cnf_clauses += [[q(i,j,S).negate(),q(i,j,E).negate(),q(i,j+1,S).negate(),q(i+1,j,E).negate()]]
+                cnf_clauses += [[q(i,j,S).negate(),q(i,j,W).negate(),q(i,j-1,S).negate(),q(i+1,j,W).negate()]]
 
     if debug:
         print()
