@@ -235,12 +235,12 @@ for i,line in enumerate(rep,1):
         #Clausulas tipo 2
 
         for j in range(1,cols):
-            cnf_clauses+= [[Q(1,j,W),Z(1,j)][-Q(1,j,W),-Z(1,j)]]
-            cnf_clauses+= [[Q(cols,j,E),Z(cols,j)][-Q(cols,j,E),-Z(cols,j)]]
+            cnf_clauses+= [[Q(1,j,W),Z(1,j)],[-Q(1,j,W),-Z(1,j)]]
+            cnf_clauses+= [[Q(cols,j,E),Z(cols,j)],[-Q(cols,j,E),-Z(cols,j)]]
 
         for i in range(1,rows):
-            cnf_clauses+= [[Q(i,1,S),Z(i,1)][-Q(i,1,S),-Z(i,1)]]
-            cnf_clauses+= [[Q(i,rows,N),Z(i,rows)][-Q(i,rows,N),-Z(i,rows)]]
+            cnf_clauses+= [[Q(i,1,S),Z(i,1)],[-Q(i,1,S),-Z(i,1)]]
+            cnf_clauses+= [[Q(i,rows,N),Z(i,rows)],[-Q(i,rows,N),-Z(i,rows)]]
 
         for i in range(2,rows-1):
             for j in range(2,cols-1):
