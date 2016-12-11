@@ -28,6 +28,9 @@ class Clause(object):
         self.neg = - self.neg
         return self
 
+    def __neg__(self):
+        self.negate()
+
     def to_tuple(self):
         pass
 
@@ -245,10 +248,10 @@ for i,line in enumerate(rep,1):
         ##todo sigue dendro del doble ciclo para i,j
 
         # Interior vs exterior clauses
-            M = 5 # ?
-            if ( (i == 1) and (1 <= j and j <= M) ):
-                cnf_clauses += [ [Q(1,j,w),Z(1,j)] ]
-                cnf_clauses += [Z(1,j).negate(),Q(1,j,w).negate()]
+        M = 5 # ?
+        if ( (i == 1) and (1 <= j and j <= M) ):
+            cnf_clauses += [ [Q(1,j,Dir.west),Z(1,j)] ]
+            cnf_clauses += [-Z(1,j),-Q(1,j,Dir.west)]
 
             # if ( (i == N) and (1 <= j and j <= M) ):
             #     q(N,j,e) v z(N,j) and
