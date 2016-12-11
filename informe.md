@@ -36,10 +36,12 @@ de variables diferentes utilizadas y el número de predicados.
 
 Desde python se obtiene la salida del minsat y se decodifica la respuesta, la cual es una lista de números positivos o negativos que indican que predicados son ciertos y falsos. En el script se eliminan los predicados que no se refieren a aristas en el problema y se ignoran las aristas negadas (que no se encuentran en la salida). Por último se imprime en pantalla la solución al problema indicando si una arista está o no iniciando por la primera fila de celdas colocando primero las aritas norte, luego las oeste (una por fila), las este y por último las de dirección sur.
 
-Al correr el programa mediante la orden ```python3 main.py < input.txt``` se obtuvieron los resultados que se encuentran en salida.txt, los casos marcados como UNSATISFIABLE no pudieron ser resueltos por choques entre los predicados suministrados a minsat.
+Al correr el programa mediante la orden ```python3 main.py < input.txt``` se obtuvieron los resultados que se encuentran en *resultados.txt*, los casos marcados como UNSATISFIABLE no pudieron ser resueltos por choques entre los predicados suministrados a minsat.
 
 Para correr el programa gráfico es necesario instalar pygames y utilizar el comando ```python draw.py < example_output.txt```
 
 El programa principal main.py hace uso de miniSat, el cual es el ejecutable que puede ser encontrado en la página oficial http://minisat.se/. La versión adjunta en el problema es para linux de 64, puede ser sustituida por cualquier otra mientras mantenga el nombre *miniSat* y sea ejecutable (ya que es lanzado desde python).
 
 main.py crea un archivo intermedio int_file para poder comunicarse con minSat.
+
+En este archivo comprimido también se pueden observar algunas imagenes generadas por draw.py a partir de nuestras soluciones proporcionadas.
