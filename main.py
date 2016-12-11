@@ -5,7 +5,6 @@ from enum import Enum
 debug = True
 
 class Dir(Enum):
-    belongs = 0
     north = 1
     west  = 2
     east  = 3
@@ -29,7 +28,7 @@ class Clause(object):
         return self
 
     def __neg__(self):
-        self.negate()
+        return self.negate()
 
     def to_tuple(self):
         pass
@@ -164,7 +163,7 @@ for i,line in enumerate(rep,1):
         if   (case == 0):
             # Remove all edges
             for d in Dir:
-                cnf_clauses += [ [ Q(i,j,d).negate() ] ]
+                cnf_clauses += [ [ -Q(i,j,d) ] ]
         elif (case == 1):
             # Add any of the edges
             cnf_clauses += [ [ Q(i,j,d) for d in Dir ] ]
@@ -172,23 +171,23 @@ for i,line in enumerate(rep,1):
             for d1 in Dir:
                 for d2 in Dir:
                     if (d1.value < d2.value):
-                        cnf_clauses +=[ [ Q(i,j,d1).negate() 
-                                       , Q(i,j,d2).negate() ] ]
+                        cnf_clauses +=[ [ -Q(i,j,d1) 
+                                        , -Q(i,j,d2) ] ]
             pass                                       
         elif (case == 2):
             # Todas las formas de tener dos aristas de un cuadro en cnf
             # ( !E ||  !n ||  !s) && ( !E ||  !n ||  !w) && ( !E ||  !s ||  !w) && (E || n || s) && (E || n || w) && (E || s || w) && ( !n ||  !s ||  !w) && (n || s || w)
-            cnf_clauses += [[Q(i,j,Dir.east).negate()
-                            ,Q(i,j,Dir.north).negate()
-                            ,Q(i,j,Dir.south).negate()]]
+            cnf_clauses += [[-Q(i,j,Dir.east)
+                            ,-Q(i,j,Dir.north)
+                            ,-Q(i,j,Dir.south)]]
 
-            cnf_clauses += [[Q(i,j,Dir.east).negate()
-                            ,Q(i,j,Dir.north).negate()
-                            ,Q(i,j,Dir.west).negate()]]
+            cnf_clauses += [[-Q(i,j,Dir.east)
+                            ,-Q(i,j,Dir.north)
+                            ,-Q(i,j,Dir.west)]]
 
-            cnf_clauses += [[Q(i,j,Dir.east).negate()
-                            ,Q(i,j,Dir.south).negate()
-                            ,Q(i,j,Dir.west).negate()]]
+            cnf_clauses += [[-Q(i,j,Dir.east)
+                            ,-Q(i,j,Dir.south)
+                            ,-Q(i,j,Dir.west)]]
 
             cnf_clauses += [[Q(i,j,Dir.east)
                             ,Q(i,j,Dir.north)
@@ -202,9 +201,9 @@ for i,line in enumerate(rep,1):
                             ,Q(i,j,Dir.south)
                             ,Q(i,j,Dir.west)]]
 
-            cnf_clauses += [[Q(i,j,Dir.north).negate()
-                            ,Q(i,j,Dir.south).negate()
-                            ,Q(i,j,Dir.west).negate()]]
+            cnf_clauses += [[-Q(i,j,Dir.north)
+                            ,-Q(i,j,Dir.south)
+                            ,-Q(i,j,Dir.west)]]
 
             cnf_clauses += [[Q(i,j,Dir.north)
                             ,Q(i,j,Dir.south)
@@ -212,7 +211,7 @@ for i,line in enumerate(rep,1):
 
         elif (case == 3):
             # Add all edges but one
-            cnf_clauses += [ [ Q(i,j,d).negate() for d in Dir ] ]
+            cnf_clauses += [ [ (-Q(i,j,d)) for d in Dir ] ]
 
             for d1 in Dir:
                 for d2 in Dir:
