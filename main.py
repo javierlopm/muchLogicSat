@@ -360,12 +360,14 @@ for i,line in enumerate(rep,1):
         #( P && Q => (~R || ~W))
         #((¬P || ¬Q ) or (~R || ~W))
         #COMENTAR SI ALGO NO FURULA
-        for i in range(1,rows-1):
-            for j in range(1,cols-1):
-                cnf_clauses += [[Q(i,j,N).negate(),Q(i,j,E).negate(),Q(i,j+1,N).negate(),Q(i-1,j,E).negate()]]
-                cnf_clauses += [[Q(i,j,N).negate(),Q(i,j,W).negate(),Q(i,j-1,N).negate(),Q(i-1,j,W).negate()]]
-                cnf_clauses += [[Q(i,j,S).negate(),Q(i,j,E).negate(),Q(i,j+1,S).negate(),Q(i+1,j,E).negate()]]
-                cnf_clauses += [[Q(i,j,S).negate(),Q(i,j,W).negate(),Q(i,j-1,S).negate(),Q(i+1,j,W).negate()]]
+        #CASO BLAI, UNA PARTE
+
+        #for i in range(1,rows-1):
+        #    for j in range(1,cols-1):
+        #        cnf_clauses += [[Q(i,j,N).negate(),Q(i,j,E).negate(),Q(i,j+1,N).negate(),Q(i-1,j,E).negate()]]
+        #        cnf_clauses += [[Q(i,j,N).negate(),Q(i,j,W).negate(),Q(i,j-1,N).negate(),Q(i-1,j,W).negate()]]
+        #        cnf_clauses += [[Q(i,j,S).negate(),Q(i,j,E).negate(),Q(i,j+1,S).negate(),Q(i+1,j,E).negate()]]
+        #        cnf_clauses += [[Q(i,j,S).negate(),Q(i,j,W).negate(),Q(i,j-1,S).negate(),Q(i+1,j,W).negate()]]
 
     if debug:
         print()
