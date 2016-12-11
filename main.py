@@ -452,14 +452,18 @@ for i,line in enumerate(rep,1):
         for i in range (2,rows-1):
 
             #Izquierdos
-            cnf_clauses += [[-Q(i,1,N),-Q(i,1,E),-Q(i,2,N),-Q(i-1,1,E)]]
-            cnf_clauses += [[-Q(i,1,S),-Q(i,1,E),-Q(i,2,S),-Q(i+1,1,E)]]
+            cnf_clauses += [[-Q(i,1,N),-Q(i,1,E),-Q(i-1,1,E)]]
+            cnf_clauses += [[-Q(i,1,N),-Q(i,1,E),-Q(i-1,1,E)]]
+            cnf_clauses += [[-Q(i,1,S),-Q(i,1,E),-Q(i+1,1,E)]]
+            cnf_clauses += [[-Q(i,1,S),-Q(i,1,E),-Q(i+1,1,E)]]
             cnf_clauses += [[-Q(i,1,N),-Q(i,1,W),-Q(i-1,1,W)]]
             cnf_clauses += [[-Q(i,1,S),-Q(i,1,W),-Q(i+1,1,W)]]
 
             #Derechos
-            cnf_clauses += [[-Q(i,cols,N),-Q(i,cols,W),-Q(i,cols-1,N),-Q(i-1,cols,W)]]
-            cnf_clauses += [[-Q(i,cols,S),-Q(i,cols,W),-Q(i,cols-1,S),-Q(i+1,cols,W)]]
+            cnf_clauses += [[-Q(i,cols,N),-Q(i,cols,W),-Q(i,cols-1,N)]]
+            cnf_clauses += [[-Q(i,cols,N),-Q(i,cols,W),-Q(i-1,cols,W)]]
+            cnf_clauses += [[-Q(i,cols,S),-Q(i,cols,W),-Q(i,cols-1,S)]]
+            cnf_clauses += [[-Q(i,cols,S),-Q(i,cols,W),-Q(i+1,cols,W)]]
             cnf_clauses += [[-Q(i,cols,N),-Q(i,cols,E),-Q(i-1,cols,E)]]
             cnf_clauses += [[-Q(i,cols,S),-Q(i,cols,E),-Q(i+1,cols,E)]]
 
@@ -468,12 +472,16 @@ for i,line in enumerate(rep,1):
             #Superiores
             cnf_clauses += [[-Q(1,j,N),-Q(1,j,E),-Q(1,j+1,N)]]
             cnf_clauses += [[-Q(1,j,N),-Q(1,j,W),-Q(1,j-1,N)]]
-            cnf_clauses += [[-Q(1,j,S),-Q(1,j,E),-Q(1,j+1,S),-Q(2,j,E)]]
-            cnf_clauses += [[-Q(1,j,S),-Q(1,j,W),-Q(1,j-1,S),-Q(2,j,W)]]
+            cnf_clauses += [[-Q(1,j,S),-Q(1,j,E),-Q(1,j+1,S)]]
+            cnf_clauses += [[-Q(1,j,S),-Q(1,j,E),-Q(2,j,E)]]
+            cnf_clauses += [[-Q(1,j,S),-Q(1,j,W),-Q(1,j-1,S)]]
+            cnf_clauses += [[-Q(1,j,S),-Q(1,j,W),-Q(2,j,W)]]
 
             #Inferiores
-            cnf_clauses += [[-Q(rows,j,N),-Q(rows,j,E),-Q(rows,j+1,N),-Q(rows-1,j,E)]]
-            cnf_clauses += [[-Q(rows,j,N),-Q(rows,j,W),-Q(rows,j-1,N),-Q(rows-1,j,E)]]
+            cnf_clauses += [[-Q(rows,j,N),-Q(rows,j,E),-Q(rows,j+1,N)]]
+            cnf_clauses += [[-Q(rows,j,N),-Q(rows,j,E),-Q(rows-1,j,E)]]
+            cnf_clauses += [[-Q(rows,j,N),-Q(rows,j,W),-Q(rows,j-1,N)]]
+            cnf_clauses += [[-Q(rows,j,N),-Q(rows,j,W),-Q(rows-1,j,E)]]
             cnf_clauses += [[-Q(rows,j,S),-Q(rows,j,E),-Q(rows,j+1,S)]]
             cnf_clauses += [[-Q(rows,j,S),-Q(rows,j,W),-Q(rows,j-1,S)]]
 
@@ -483,10 +491,14 @@ for i,line in enumerate(rep,1):
         # Casos internos
         for i in range(2,rows-1):
             for j in range(2,cols-1):
-                cnf_clauses += [[-Q(i,j,N),-Q(i,j,E),-Q(i,j+1,N),-Q(i-1,j,E)]]
-                cnf_clauses += [[-Q(i,j,N),-Q(i,j,W),-Q(i,j-1,N),-Q(i-1,j,W)]]
-                cnf_clauses += [[-Q(i,j,S),-Q(i,j,E),-Q(i,j+1,S),-Q(i+1,j,E)]]
-                cnf_clauses += [[-Q(i,j,S),-Q(i,j,W),-Q(i,j-1,S),-Q(i+1,j,W)]]
+                cnf_clauses += [[-Q(i,j,N),-Q(i,j,E),-Q(i,j+1,N)]]
+                cnf_clauses += [[-Q(i,j,N),-Q(i,j,E),-Q(i-1,j,E)]]
+                cnf_clauses += [[-Q(i,j,N),-Q(i,j,W),-Q(i,j-1,N)]]
+                cnf_clauses += [[-Q(i,j,N),-Q(i,j,W),-Q(i-1,j,W)]]
+                cnf_clauses += [[-Q(i,j,S),-Q(i,j,E),-Q(i,j+1,S)]]
+                cnf_clauses += [[-Q(i,j,S),-Q(i,j,E),-Q(i+1,j,E)]]
+                cnf_clauses += [[-Q(i,j,S),-Q(i,j,W),-Q(i,j-1,S)]]
+                cnf_clauses += [[-Q(i,j,S),-Q(i,j,W),-Q(i+1,j,W)]]
 
 
 # Fin del cuadro
