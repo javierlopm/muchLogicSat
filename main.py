@@ -297,10 +297,6 @@ for i,line in enumerate(rep,1):
             [-Z(i,j) , Q(i,j,S) , -Z(i,j-1)]]
             
 
-
-    if debug:
-        print()
-
         # Reachable cells
         # r(c,c)
         # r(c(i,j),c(i,j))
@@ -327,6 +323,8 @@ for i,line in enumerate(rep,1):
                 #R(c(i,j),c(x,y)) and -q(c(x,y),W) => R(c(i,j),c(x-1,y))
                 if (y != cols): # 
                         cnf_clauses += [[-R(i,j,x,y),Q(x,y,W),R(i,j,x-1,y)]]
+    if debug:
+        print()
 
         
 
@@ -392,6 +390,7 @@ for i in range(2,rows-1):
 #(1,1)
 #(¬q(1,1,N) and ¬q(1,1,W)) V (q(1,1,N) and q(1,1,W))
 #CNF
+
 
 #Laterales Horizontales
 for i in range (2,rows-1):
@@ -468,6 +467,7 @@ if False:
 
 
 
+
 # Call minisat
 f = open('int_file', 'w')
 
@@ -522,7 +522,7 @@ try:
         # Convert int result to clauses back again
         
         clause = universe[abs(int(i))-1]
-        print(clause)
+        # print(clause)
 
         if isinstance(clause[2],Dir):
             (r,c,d) = clause
@@ -551,7 +551,7 @@ try:
     s1 = sorted(s0,key=lambda c: c.dir.value )
     s2 = sorted(s1,key=attrgetter("i"))
 
-    if debug:
+    if False:
         list(map(lambda c: print(c),s2))
         pass
 
