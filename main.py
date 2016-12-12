@@ -345,9 +345,25 @@ for i in range(1,rows):
 for i in range(2,rows-1):
     for j in range(2,cols-1):
         #(=>)
-        #( !E ||  !N ||  !P ||  !S || V) && ( !E ||  !N ||  !P ||  !S ||  !W) && ( !E ||  !N ||  !P || U || V) && ( !E ||  !N ||  !P || U ||  !W) && ( !E ||  !P || R ||  !S || V) && ( !E ||  !P || R ||  !S ||  !W) && ( !E ||  !P || R || U || V) && ( !E ||  !P || R || U ||  !W) && ( !N ||  !P ||  !S || T || V) && ( !N ||  !P ||  !S || T ||  !W) && ( !N ||  !P || T || U || V) && ( !N ||  !P || T || U ||  !W) && ( !P || R ||  !S || T || V) && ( !P || R ||  !S || T ||  !W) && ( !P || R || T || U || V) && ( !P || R || T || U ||  !W)
+        # ( !E ||  !N ||  !P ||  !S || V) && 
+        # ( !E ||  !N || !P || !S ||!W) && 
+        # ( !E ||  !N || !P || U  || V) && 
+        # ( !E ||  !N || !P || U  ||!W) && 
+        # ( !E ||  !P ||  R || !S || V) && 
+        # ( !E ||  !P ||  R || !S ||!W) && 
+        # ( !E ||  !P ||  R || U  || V) && 
+        # ( !E ||  !P ||  R || U  ||!W) && 
+        # ( !N ||  !P || !S || T  || V) && 
+        # ( !N ||  !P || !S || T  ||!W) && 
+        # ( !N ||  !P ||  T || U  || V) && 
+        # ( !N ||  !P ||  T || U  ||!W) &&
+        # ( !P ||   R || !S || T  || V) &&
+        # ( !P ||   R || !S || T  ||!W) && 
+        # ( !P ||   R ||  T || U  || V) &&
+        # ( !P ||   R ||  T || U  ||!W)
         
-        cnf_clauses+=  [[ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i-1,j)] ,
+        cnf_clauses+=  [
+         [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i-1,j)] ,
          [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) ,  -Q(i,j,W)] ,
          [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) , Z(i,j-1) , Z(i-1,j)] ,
          [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) , Z(i,j-1) ,  -Q(i,j,W)] ,
@@ -359,10 +375,10 @@ for i in range(2,rows-1):
          [ -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i+1,j) ,  -Q(i,j,W)] ,
          [ -Q(i,j,N) ,  -Z(i,j) , Z(i+1,j) , Z(i,j-1) , Z(i-1,j)] ,
          [ -Q(i,j,N) ,  -Z(i,j) , Z(i+1,j) , Z(i,j-1) ,  -Q(i,j,W)] ,
-         [ -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i+1,j) , Z(i-1,j)] ,
-         [ -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i+1,j) ,  -Q(i,j,W)] ,
-         [ -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) , Z(i-1,j)] ,
-         [ -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) ,  -Q(i,j,W)] ]
+         [ -Z(i,j)   , Z(i,j+1) ,  -Q(i,j,S) , Z(i+1,j) , Z(i-1,j)] ,
+         [ -Z(i,j)   , Z(i,j+1) ,  -Q(i,j,S) , Z(i+1,j) ,  -Q(i,j,W)] ,
+         [ -Z(i,j)   , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) , Z(i-1,j)] ,
+         [ -Z(i,j)   , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) ,  -Q(i,j,W)] ]
 
          #(<=)
          #(E || P ||  !T) && (N || P ||  !R) && (P || S ||  !U) && (P ||  !V || W)
@@ -414,8 +430,8 @@ for j in range (2,cols-1):
     cnf_clauses += [[-Q(rows,j,S),-Q(rows,j,E),-Q(rows,j+1,S)]]
     cnf_clauses += [[-Q(rows,j,S),-Q(rows,j,W),-Q(rows,j-1,S)]]
 
-        #Esquinas
-        #Estan cubiertas por los laterales V + H
+#Esquinas
+#Estan cubiertas por los laterales V + H
 
 # Casos internos:
 for i in range(2,rows-1):
