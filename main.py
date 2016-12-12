@@ -622,7 +622,7 @@ def main(in_str):
         index = 0
 
         #print(str(rows)+" "+str(cols)+" " + in_str)
-        print(in_str[:-1])
+        #print(in_str[:-1])
         print(str(rows)+" "+str(cols)+" ",end="")
         
 
@@ -664,5 +664,6 @@ def main(in_str):
 
 if __name__ == '__main__':
     for line in sys.stdin:
+        print(line[:-1])
         universe = set()
         main(line)
