@@ -180,6 +180,8 @@ por el lado norte, entonces:
 
 r(c,c') & -q(c',n) => r(c,c'')
 
+-R(i,j,x,y) , Q(x,y,N) , R(i,j,a,b)
+
 ya que si c' es alcanzable desde c y no existe un segmento entre c' y c'',
 entonces c'' también debe ser alcanzable desde c. Similarmente definimos
 fórmulas para las otras direcciones e, s, y w.
