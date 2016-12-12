@@ -423,7 +423,7 @@ print('hola')
 print(aux)
 
 #Laterales Horizontales
-for i in range (2,rows-1):
+for i in range (2,rows):
 
     #Izquierdos
     cnf_clauses += [[-Q(i,1,N),-Q(i,1,E),-Q(i,2,N)]]
@@ -442,7 +442,7 @@ for i in range (2,rows-1):
     cnf_clauses += [[-Q(i,cols,S),-Q(i,cols,E),-Q(i+1,cols,E)]]
 
 #Laterales Verticales
-for j in range (2,cols-1):
+for j in range (2,cols):
     #Superiores
     cnf_clauses += [[-Q(1,j,N),-Q(1,j,E),-Q(1,j+1,N)]]
     cnf_clauses += [[-Q(1,j,N),-Q(1,j,W),-Q(1,j-1,N)]]
@@ -463,8 +463,8 @@ for j in range (2,cols-1):
 #Estan cubiertas por los laterales V + H
 
 # Casos internos:
-for i in range(2,rows-1):
-    for j in range(2,cols-1):
+for i in range(2,rows):
+    for j in range(2,cols):
         cnf_clauses += [[Q(i,j,N) , (Q(i,j,W)) , (Q(i-1,j-1,S)) , (-Q(i-1,j-1,E))],
         [Q(i,j,N) , (Q(i,j,W)) , (-Q(i-1,j-1,S)) , (Q(i-1,j-1,E))],
         [Q(i,j,N) , (-Q(i,j,W)) , (Q(i-1,j-1,S)) , (Q(i-1,j-1,E))],
