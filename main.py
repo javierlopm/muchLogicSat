@@ -46,6 +46,29 @@ class Clause(object):
 
         return (self.neg * (i+1) )
 
+    def getOposite(self,N,M):
+        print(self.dir.value)
+        if self.dir.value == 1:
+            if self.j-1 > 0:
+                if self.neg:
+                    return Clause(self.i,self.j-1,Dir.south).negate()
+                else:
+                    return Clause(self.i,self.j-1,Dir.south)
+
+        elif self.dir.value == 2:
+            if self.i-1 > 0:
+                if self.neg:
+                    return Clause(self.i-1,self.j,Dir.east).negate()
+                else:
+                    return Clause(self.i-1,self.j,Dir.east)
+                
+        elif self.dir.value == 3:
+            if self.i+1 <= N:
+                if self.neg:
+                    return Clause(self.i+1,self.j,Dir.west).negate()
+                else:
+                    return Clause(self.i+1,self.j,Dir.west) 
+
 class Q(Clause):
     # Universo de clausulas con valores unicos
 
@@ -391,14 +414,21 @@ for i in range(2,rows-1):
 #(¬q(1,1,N) and ¬q(1,1,W)) V (q(1,1,N) and q(1,1,W))
 #CNF
 
+aux=[]
+for c in cnf_clauses:
+    if len(c)==1:
+      if isinstance(c[0],Dir):
+        aux+=c[0].getOposite(rows,cols)
+print('hola')
+print(aux)
 
 #Laterales Horizontales
 for i in range (2,rows-1):
 
     #Izquierdos
+    cnf_clauses += [[-Q(i,1,N),-Q(i,1,E),-Q(i,2,N)]]
     cnf_clauses += [[-Q(i,1,N),-Q(i,1,E),-Q(i-1,1,E)]]
-    cnf_clauses += [[-Q(i,1,N),-Q(i,1,E),-Q(i-1,1,E)]]
-    cnf_clauses += [[-Q(i,1,S),-Q(i,1,E),-Q(i+1,1,E)]]
+    cnf_clauses += [[-Q(i,1,S),-Q(i,1,E),-Q(i,2,S)]]
     cnf_clauses += [[-Q(i,1,S),-Q(i,1,E),-Q(i+1,1,E)]]
     cnf_clauses += [[-Q(i,1,N),-Q(i,1,W),-Q(i-1,1,W)]]
     cnf_clauses += [[-Q(i,1,S),-Q(i,1,W),-Q(i+1,1,W)]]
@@ -444,7 +474,20 @@ for i in range(2,rows-1):
         [-Q(i,j,N) , (-Q(i,j,W)) , (Q(i-1,j-1,S)) , (-Q(i-1,j-1,E))],
         [-Q(i,j,N) , (-Q(i,j,W)) , (-Q(i-1,j-1,S)) , (Q(i-1,j-1,E))],
         [-Q(i,j,N) , (-Q(i,j,W)) , (-Q(i-1,j-1,S)) , (-Q(i-1,j-1,E))]]
+''' 
+#Old
+for i in range(2,rows-1):
+    for j in range(2,cols-1):
+        cnf_clauses += [[-Q(i,j,N),-Q(i,j,E),-Q(i,j+1,N)]]
+        cnf_clauses += [[-Q(i,j,N),-Q(i,j,E),-Q(i-1,j,E)]]
+        cnf_clauses += [[-Q(i,j,N),-Q(i,j,W),-Q(i,j-1,N)]]
+        cnf_clauses += [[-Q(i,j,N),-Q(i,j,W),-Q(i-1,j,W)]]
+        cnf_clauses += [[-Q(i,j,S),-Q(i,j,E),-Q(i,j+1,S)]]
+        cnf_clauses += [[-Q(i,j,S),-Q(i,j,E),-Q(i+1,j,E)]]
+        cnf_clauses += [[-Q(i,j,S),-Q(i,j,W),-Q(i,j-1,S)]]
+        cnf_clauses += [[-Q(i,j,S),-Q(i,j,W),-Q(i+1,j,W)]]
 
+'''
 #Adjacent segments
 
 
@@ -455,13 +498,14 @@ if debug:
     print("\n\n")
 
 
-if False:
+if debug:
     # Mostrando clausulas con nuestro tipo de datos
     for clause in cnf_clauses:
-        print("{",end="")
-        for pred in clause:
-            print(str(pred) ,end=",")
-        print("},")
+        if len(clause) ==1 :#BORRAR
+            print("{",end="")
+            for pred in clause:
+                print(str(pred) ,end=",")
+            print("},")
 
     print("\n\n")
 
