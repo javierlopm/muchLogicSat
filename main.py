@@ -470,7 +470,17 @@ for i,line in enumerate(rep,1):
         #Esquinas
         #Estan cubiertas por los laterales V + H
 
-        # Casos internos
+        #CASOS INTERNOS EN FORMATO CNF ACA 
+        ((q(i,j,N)) v (q(i,j,W)) v (q(i-1,j-1,S)) v (¬q(i-1,j-1,E))) ∧
+        ((q(i,j,N)) v (q(i,j,W)) v (¬q(i-1,j-1,S)) v (q(i-1,j-1,E))) ∧
+        ((q(i,j,N)) v (¬q(i,j,W)) v (q(i-1,j-1,S)) v (q(i-1,j-1,E))) ∧
+        ((q(i,j,N)) v (¬q(i,j,W)) v (¬q(i-1,j-1,S)) v (¬q(i-1,j-1,E))) ∧
+        ((¬q(i,j,N)) v (q(i,j,W)) v (q(i-1,j-1,S)) v (q(i-1,j-1,E))) ∧
+        ((¬q(i,j,N)) v (q(i,j,W)) v (¬q(i-1,j-1,S)) v (¬q(i-1,j-1,E))) ∧
+        ((¬q(i,j,N)) v (¬q(i,j,W)) v (q(i-1,j-1,S)) v (¬q(i-1,j-1,E))) ∧
+        ((¬q(i,j,N)) v (¬q(i,j,W)) v (¬q(i-1,j-1,S)) v (q(i-1,j-1,E))) ∧
+        ((¬q(i,j,N)) v (¬q(i,j,W)) v (¬q(i-1,j-1,S)) v (¬q(i-1,j-1,E)))
+        # Casos internos:
         for i in range(2,rows-1):
             for j in range(2,cols-1):
                 cnf_clauses += [[-Q(i,j,N),-Q(i,j,E),-Q(i,j+1,N)]]
