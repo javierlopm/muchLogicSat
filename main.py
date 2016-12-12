@@ -592,7 +592,8 @@ try:
 
     index = 0
 
-    print(str(rows)+" "+str(cols)+" " + in_str)
+    #print(str(rows)+" "+str(cols)+" " + in_str)
+    print(in_str)
     print(str(rows)+" "+str(cols)+" ",end="")
 
     # Print result in given format
