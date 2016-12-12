@@ -616,9 +616,9 @@ try:
     print("5 5 ",end="")
 
     # Print result in given format
-    for i in range(1,6):
+    for i in range(1,rows+1):
         for d in Dir:
-            for j in range(1,6):
+            for j in range(1,cols+1):
                 # Casos especiales: norte y oeste
                 # Solo la primera fila tiene nortes
                 if (i > 1) and (d is Dir.north):
