@@ -116,12 +116,27 @@ class Z(IjClause):
             universe.add(self.to_tuple())
 
 class R(IjClause):
-    def __init__(self,i,j,add=True):
+    def __init__(self,i,j,x,y,add=True):
         # Clausula de tipo q(fila,columna,direccion, agregar_al_universo)
+        self.x = x
+        self.y = y
         super(R,self).__init__(i,j,'r',add)
 
         if add:
             universe.add(self.to_tuple())
+
+    def to_tuple(self):
+        # Necesario para que las clausulas tengan identificador unico
+        return (self.i,self.j,self.type,self.x,self.y)
+
+    def __str__(self):
+        # Representacion como string
+        neg = "-" if (self.neg ==-1) else ""
+        res = ( neg + self.type +"(c("+ str(self.i) + "," + 
+                                       str(self.j)+"),c("+ 
+                                       str(self.x) + "," + 
+                                       str(self.y) + "))")
+        return res
 
 
 
@@ -291,8 +306,33 @@ for i,line in enumerate(rep,1):
                     [-Z(i,j) , Q(i,j,S) , -Z(i,j-1)]]
             '''
 
+        # Reachable cells
+        # r(c,c)
+        # r(c(i,j),c(i,j))
 
+    cnf_clauses += [[ R(i,j,i,j) ]]
 
+    for x in range(1,rows+1):
+        for y in range(1,cols+1):
+            #North
+            #r(c(i,j),c(x,y)) and -q(c(x,y),N) => r(c(i,j),c(x,y-1))
+            if (y != 1):
+                cnf_clauses += [[ -R(i,j,x,y),Q(x,y,N),R(i,j,x,y-1)]]
+
+            #South
+            #R(c(i,j),c(x,y)) and -q(c(x,y),S) => R(c(i,j),c(x,y+1))
+            if (y != cols ): #if (y != M):
+                cnf_clauses += [[-R(i,j,x,y),Q(x,y,S),R(i,j,x,y+1)]]
+
+            #East
+            #R(c(i,j),c(x,y)) and -q(c(x,y),E) => R(c(i,j),c(x+1,y))
+            if (x != rows): 
+                cnf_clauses += [[-R(i,j,x,y),Q(x,y,E),R(i,j,x+1,y)]]
+
+            #West
+            #R(c(i,j),c(x,y)) and -q(c(x,y),W) => R(c(i,j),c(x-1,y))
+            if (y != cols): # 
+                    cnf_clauses += [[-R(i,j,x,y),Q(x,y,W),R(i,j,x-1,y)]]
 
     if debug:
         print()
@@ -341,31 +381,6 @@ for i,line in enumerate(rep,1):
             #     (¬z(i,j) ∨ q(i,j,e) ∨ ¬z(i+1,j))
             #     (¬z(i,j) ∨ q(i,j,s) ∨ ¬z(i,j-1))
 
-            # Reachable cells
-            #r(c,c)
-            # r(c(i,j),c(i,j))
-
-            # for x in range(N):
-            #     for y in range(M):
-            #         #North
-            #         #r(c(i,j),c(x,y)) and -q(c(x,y),N) => r(c(i,j),c(x,y-1))
-            #         if (y != 1):
-            #             ¬r(c(i,j),c(x,y)) v q(c(x,y),N) v r(c(i,j),c(x,y-1))
-
-            #         #South
-            #         #r(c(i,j),c(x,y)) and -q(c(x,y),S) => r(c(i,j),c(x,y+1))
-            #         if (y != M):
-            #             ¬r(c(i,j),c(x,y)) v q(c(x,y),S) v r(c(i,j),c(x,y+1))
-
-            #         #East
-            #         #r(c(i,j),c(x,y)) and -q(c(x,y),E) => r(c(i,j),c(x+1,y))
-            #         if (x != N):
-            #             ¬r(c(i,j),c(x,y)) v q(c(x,y),E) v r(c(i,j),c(x+1,y))
-
-            #         #West
-            #         #r(c(i,j),c(x,y)) and -q(c(x,y),W) => r(c(i,j),c(x-1,y))
-            #         if (y != M):
-            #             ¬r(c(i,j),c(x,y)) v q(c(x,y),W) v r(c(i,j),c(x-1,y))
 
             # Interior cells reachable
             #z(c) & z(c') => r(c,c')
@@ -377,7 +392,7 @@ for i,line in enumerate(rep,1):
         
 
 
-        #Adjacent segments
+        
 
         #Puntos esquina
         #(1,1)
@@ -507,6 +522,7 @@ for i,line in enumerate(rep,1):
                 cnf_clauses += [[-Q(i,j,S),-Q(i,j,W),-Q(i,j-1,S)]]
                 cnf_clauses += [[-Q(i,j,S),-Q(i,j,W),-Q(i+1,j,W)]]
 
+#Adjacent segments
 
 
 # Fin del cuadro
@@ -534,7 +550,7 @@ f = open('int_file', 'w')
 def print_sat_clause(x):
     # Mostrando respuestas tipo cnf
     for i in x:
-        print(str(i))
+        # print(str(i))
         f.write(str(i.get_sat_val()))
         f.write(" ")
     f.write("0\n")
@@ -579,8 +595,12 @@ try:
     result = []
     for i in (data.split("\n")[1].split()[:-1]):
         # Convert int result to clauses back again
-        (r,c,d) = universe[abs(int(i))-1]
-        if isinstance(d,Dir):
+        
+        clause = universe[abs(int(i))-1]
+        print(clause)
+
+        if isinstance(clause[2],Dir):
+            (r,c,d) = clause
             c = Q(r,c,d,False)
 
             if int(i) < 0:
@@ -588,14 +608,19 @@ try:
             
             result += [c]
         else:
-            if (d=="r"):
-                c = R(r,c,False)
+
+            if (clause[2]=="r"):
+                (r,c,t,x,y) = clause
+                c = R(r,c,x,y,False)
             else:
+                (r,c,t) = clause
                 c = Z(r,c,False)
 
 
     # Sort result, first by row, direction, and column at last
     from operator import attrgetter
+
+    # Removing auxiliary clauses
 
     s0 = sorted(result,key=attrgetter("j"))
     s1 = sorted(s0,key=lambda c: c.dir.value )
@@ -603,6 +628,7 @@ try:
 
     if debug:
         list(map(lambda c: print(c),s2))
+        pass
 
     index = 0
 
@@ -622,13 +648,16 @@ try:
                 if (j > 1 and (d is Dir.west)):
                     break
 
+                # print("revisando")
                 if ((s2[index].to_tuple() == (i,j,d))):
+                    # print("revisado")
                     if (s2[index].neg == 1):
                         print(1,end="")
                     else:
                         print("0",end="")
                     index += 1
                 else:
+                    # print("revisado")
                     # print("No se encontro {} {} con {}".format(i,j,d.name))
                     print("0",end="")
 
