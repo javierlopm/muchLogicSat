@@ -652,6 +652,8 @@ def main(in_str):
                 if (d is Dir.south) or (d is Dir.east) or ((d is Dir.north) and i==1):
                     print(" ",end="")
 
+        print("")
+
     except Exception as e:
         print(e)
         print("UNSATISFIABLE")
