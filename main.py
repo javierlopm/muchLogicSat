@@ -150,6 +150,10 @@ rows = int(toks[0]) #modificado
 cols = int(toks[1]) #modificado
 rep = toks[2:]
 
+N=Dir.north
+S=Dir.south
+E=Dir.east
+W=Dir.west 
 
 cnf_clauses = []
 
@@ -241,19 +245,6 @@ for i,line in enumerate(rep,1):
         ####COMENTAR DESDE ACA PARA QUE CORRA
         ## Esta todo en cnf falta decidir como representaremos r y z dado que tienen que ser variables/constantes diferentes a las q
         ##todo sigue dendro del doble ciclo para i,j
-
-        # Interior vs exterior clauses
-        N=Dir.north
-        S=Dir.south
-        E=Dir.east
-        W=Dir.west 
-        #Clausulas tipo 2
-
-        for j in range(1,cols):
-            cnf_clauses+= [[Q(1,j,W),Z(1,j)],[-Q(1,j,W),-Z(1,j)]]
-            cnf_clauses+= [[Q(rows,j,E),Z(rows,j)],[-Q(rows,j,E),-Z(rows,j)]]
-
-
         
 
         '''
@@ -311,6 +302,7 @@ for i,line in enumerate(rep,1):
         # r(c(i,j),c(i,j))
 
     cnf_clauses += [[ R(i,j,i,j) ]]
+
 
     for x in range(1,rows+1):
         for y in range(1,cols+1):
@@ -391,84 +383,52 @@ for i,line in enumerate(rep,1):
 
         
 
+        # Interior vs exterior clauses
 
-        
+        #Clausulas tipo 2
+            
+        for j in range(1,cols):
+            cnf_clauses+= [[Q(1,j,W),Z(1,j)],[-Q(1,j,W),-Z(1,j)]]
+            cnf_clauses+= [[Q(rows,j,E),Z(rows,j)],[-Q(rows,j,E),-Z(rows,j)]]
+            
+        for i in range(1,rows):
+            cnf_clauses+= [[Q(i,1,S),Z(i,1)],[-Q(i,1,S),-Z(i,1)]]
+            cnf_clauses+= [[Q(i,cols,N),Z(i,cols)],[-Q(i,cols,N),-Z(i,rows)]]
+
+        for i in range(2,rows-1):
+            for j in range(2,cols-1):
+                #(=>)
+                #( !E ||  !N ||  !P ||  !S || V) && ( !E ||  !N ||  !P ||  !S ||  !W) && ( !E ||  !N ||  !P || U || V) && ( !E ||  !N ||  !P || U ||  !W) && ( !E ||  !P || R ||  !S || V) && ( !E ||  !P || R ||  !S ||  !W) && ( !E ||  !P || R || U || V) && ( !E ||  !P || R || U ||  !W) && ( !N ||  !P ||  !S || T || V) && ( !N ||  !P ||  !S || T ||  !W) && ( !N ||  !P || T || U || V) && ( !N ||  !P || T || U ||  !W) && ( !P || R ||  !S || T || V) && ( !P || R ||  !S || T ||  !W) && ( !P || R || T || U || V) && ( !P || R || T || U ||  !W)
+                
+                cnf_clauses+=  [[ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i-1,j)] ,
+                 [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) ,  -Q(i,j,W)] ,
+                 [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) , Z(i,j-1) , Z(i-1,j)] ,
+                 [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) , Z(i,j-1) ,  -Q(i,j,W)] ,
+                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i-1,j)] ,
+                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) ,  -Q(i,j,W)] ,
+                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) , Z(i,j-1) , Z(i-1,j)] ,
+                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) , Z(i,j-1) ,  -Q(i,j,W)] ,
+                 [ -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i+1,j) , Z(i-1,j)] ,
+                 [ -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i+1,j) ,  -Q(i,j,W)] ,
+                 [ -Q(i,j,N) ,  -Z(i,j) , Z(i+1,j) , Z(i,j-1) , Z(i-1,j)] ,
+                 [ -Q(i,j,N) ,  -Z(i,j) , Z(i+1,j) , Z(i,j-1) ,  -Q(i,j,W)] ,
+                 [ -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i+1,j) , Z(i-1,j)] ,
+                 [ -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i+1,j) ,  -Q(i,j,W)] ,
+                 [ -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) , Z(i-1,j)] ,
+                 [ -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) ,  -Q(i,j,W)] ]
+
+                 #(<=)
+                 #(E || P ||  !T) && (N || P ||  !R) && (P || S ||  !U) && (P ||  !V || W)
+
+                cnf_clauses+=[[Q(i,j,E) , Z(i,j) ,  -Z(i+1,j)] ,
+                 [Q(i,j,N) , Z(i,j) ,  -Z(i,j+1)] ,
+                 [Z(i,j) , Q(i,j,S) ,  -Z(i,j-1)] ,
+                 [Z(i,j) ,  -Z(i-1,j) , Q(i,j,W)]]
 
         #Puntos esquina
         #(1,1)
         #(¬q(1,1,N) and ¬q(1,1,W)) V (q(1,1,N) and q(1,1,W))
         #CNF
-        '''
-        n = rows+1
-        m = cols+1
-
-        cnf_clauses+=[
-             [-Q(1,1,N) , Q(1,1,W)]
-            ,[Q(1,1,N) , -Q(1,1,W)]
-
-            #(n+1,1)
-            #(¬Q(n,1,N) and ¬Q(n,1,E)) V (Q(n,1,N) and Q(n,1,E))
-            #CNF
-            ,[-Q(n,1,N) , Q(n,1,E)]
-            ,[Q(n,1,N) , -Q(n,1,E)]
-
-            #(1,m+1)
-            #(¬Q(1,m,S) and ¬Q(1,m,W)) V (Q(1,m,S) and Q(1,m,W))
-            #CNF
-            ,[-Q(1,m,S) , Q(1,m,W)]
-            ,[Q(1,m,S) , -Q(1,m,W)]
-
-            #(n+1,m+1)
-            #(¬Q(n,m,S) and ¬Q(n,m,E)) V (Q(n,m,S) and Q(n,m,E))
-            #CNF
-            ,[-Q(n,m,S) , Q(n,m,E)]
-            ,[Q(n,m,S) , -Q(n,m,E)]
-
-            #borde superior sin puntos esQuina
-            #PUNTOS: 2<=i<=n j=1
-            # (¬Q(i,1,N) && ¬Q(i,1,W) && ¬Q(i-1,1,N)) || (Q(i,1,N) && Q(i,1,W) && ¬Q(i-1,1,N)) ||
-            # (Q(i,1,N) && ¬Q(i,1,W) && Q(i-1,1,N)) || (¬Q(i,1,N) && Q(i,1,W) && Q(i-1,1,N))
-            #CNF
-            ,[-Q(i,1,N) , -Q(i,1,W) , -Q(i-1,1,N)]
-            ,[-Q(i,1,N) ,  Q(i,1,W) ,  Q(i-1,1,N)]
-            ,[ Q(i,1,N) , -Q(i,1,W) ,  Q(i-1,1,N)]
-            ,[ Q(i,1,N) ,  Q(i,1,W) , -Q(i-1,1,N)]
-            ]
-
-            #borde inferior sin puntos esquina
-            #PUNTOS: 2<=i<=n j=m
-            # (~q(i,m,S) && ~q(i,m,W) && ~q(i-1,m,S)) || (q(i,m,S) && q(i,m,W) && ~q(i-1,m,S)) ||
-            # (q(i,m,S) && ~q(i,m,W) && q(i-1,m,S)) || (~q(i,m,S) && q(i,m,W) && q(i-1,m,S))
-            #CNF
-            (¬q(i,m,S) ∨ ¬q(i,m,W) ∨ ¬q(i-1,m,S)) ∧
-            (¬q(i,m,S) ∨ q(i,m,W) ∨ q(i-1,m,S)) ∧
-            (q(i,m,S) ∨ ¬q(i,m,W) ∨ q(i-1,m,S)) ∧
-            (q(i,m,S) ∨ q(i,m,W) ∨ ¬q(i-1,m,S))
-
-            #borde derecho sin puntos esquina
-            #PUNTOS: i=n 2<=j<=m
-            # (~q(n,j,N) && ~q(n,j,E) && ~q(n,j-1,E)) || (q(n,j,N) && q(n,j,E) && ~q(n,j-1,E)) ||
-            # (q(n,j,N) && ~q(n,j,E) && q(n,j-1,E)) || (~q(n,j,N) && q(n,j,E) && q(n,j-1,E))
-            #CNF
-            (¬q(n,j,N) ∨ ¬q(n,j,E) ∨ ¬q(n,j-1,E)) ∧
-            (¬q(n,j,N) ∨ q(n,j,E) ∨ q(n,j-1,E)) ∧
-            (q(n,j,N) ∨ ¬q(n,j,E) ∨ q(n,j-1,E)) ∧
-            (q(n,j,N) ∨ q(n,j,E) ∨ ¬q(n,j-1,E))
-
-            #borde izquierdo sin puntos esquina
-            #PUNTOS: i=1 2<=j<=m
-            # (~q(1,j,N) && ~q(1,j,W) && ~q(1,j-1,W)) || (q(1,j,N) && q(1,j,W) && ~q(1,j-1,W)) ||
-            # (q(1,j,N) && ~q(1,j,W) && q(1,j-1,W)) || (~q(1,j,N) && q(1,j,W) && q(1,j-1,W))
-            #CNF
-            (¬q(1,j,N) ∨ ¬q(1,j,W) ∨ ¬q(1,j-1,W)) ∧
-            (¬q(1,j,N) ∨ q(1,j,W) ∨ q(1,j-1,W)) ∧
-            (q(1,j,N) ∨ ¬q(1,j,W) ∨ q(1,j-1,W)) ∧
-            (q(1,j,N) ∨ q(1,j,W) ∨ ¬q(1,j-1,W))
-
-            #resto de los puntos
-            # CNF ((~A) && (~B) && (~C) && (~D)) || ((A) && (B) && (~C) && (~D)) || ((A) && (~B) && (C) && (~D)) || ((A) && (~B) && (~C) && (D)) || ((~A) && (B) && (C) && (~D)) || ((~A) && (B) && (~C) && (D)) || ((~A) && (~B) && (C) && (D))
-
-        '''
 
         #Laterales Horizontales
         for i in range (2,rows-1):
