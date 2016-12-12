@@ -491,8 +491,8 @@ f.write("c    clause length = 5 \n")
 f.write("c\n")
 f.write("p cnf {} {}\n".format(len(universe),len(cnf_clauses)))
 
-if False:
-    list(map(print_sat_clause,cnf_clauses))
+# if False:
+list(map(print_sat_clause,cnf_clauses))
 
 f.close()
 
