@@ -298,8 +298,8 @@ for i,line in enumerate(rep,1):
             
 
 
-        if debug:
-            print()
+    if debug:
+        print()
 
         # Reachable cells
         # r(c,c)
@@ -456,7 +456,7 @@ if debug:
     print("\n\n")
 
 
-if debug:
+if False:
     # Mostrando clausulas con nuestro tipo de datos
     for clause in cnf_clauses:
         print("{",end="")
@@ -491,7 +491,8 @@ f.write("c    clause length = 5 \n")
 f.write("c\n")
 f.write("p cnf {} {}\n".format(len(universe),len(cnf_clauses)))
 
-list(map(print_sat_clause,cnf_clauses))
+if False:
+    list(map(print_sat_clause,cnf_clauses))
 
 f.close()
 
