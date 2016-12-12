@@ -247,139 +247,86 @@ for i,line in enumerate(rep,1):
         ##todo sigue dendro del doble ciclo para i,j
         
 
-        '''
+        
         ## como isaac lo hizo
 
         # IntErior ,S ExtErior clauSES
-        for i in range(1,rows):
-            for j in range(1,cols):
-                if ( (i == 1) and (1 <= j and j <= cols) ):
-                    cnf_clauses+= [[Q(1,j,W) , Z(1,j)],
-                    [-Z(1,j) , -Q(1,j,W)]]
+        # for i in range(1,rows):
+        #     for j in range(1,cols):
+        if ( (i == 1) and (1 <= j and j <= cols) ):
+            cnf_clauses+= [[Q(1,j,W) , Z(1,j)],
+            [-Z(1,j) , -Q(1,j,W)]]
 
-                if ( (i == rows) and (1 <= j and j <= cols) ):
-                    cnf_clauses+= [[Q(rows,j,E) , Z(rows,j)],
-                    [-Z(rows,j) , -Q(rows,j,E)]]
+        if ( (i == rows) and (1 <= j and j <= cols) ):
+            cnf_clauses+= [[Q(rows,j,E) , Z(rows,j)],
+            [-Z(rows,j) , -Q(rows,j,E)]]
 
-                if ( (1 <= i and i <= rows) and (j == 1) ):
-                    cnf_clauses+= [[Q(i,1,S) , Z(i,1)],
-                    [-Z(i,1) , -Q(i,1,S)]]
+        if ( (1 <= i and i <= rows) and (j == 1) ):
+            cnf_clauses+= [[Q(i,1,S) , Z(i,1)],
+            [-Z(i,1) , -Q(i,1,S)]]
 
-                if ( (1 <= i and i <= rows) and (j == cols) ):
-                    cnf_clauses+= [[Q(i,cols,N) , Z(i,cols)],
-                    [-Z(i,cols) , -Q(i,cols,N)]]
+        if ( (1 <= i and i <= rows) and (j == cols) ):
+            cnf_clauses+= [[Q(i,cols,N) , Z(i,cols)],
+            [-Z(i,cols) , -Q(i,cols,N)]]
 
-                if ((1 < i and i< rows) and (1 < j and j< cols)):
-                    #-Z(i,j) , [-Q(i,j,N) & Z(i,j+1)] , [-Q(i,j,E) & Z(i+1,j)] , [-Q(i,j,S) & Z(i,j-1)] , [-Q(i,j,W) & Z(i-1,j)]
-                    #CrowsF
-                    cnf_clauses+= [[Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , -Q(i,j,S)],
-                    [Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , Z(i,j-1)],
-                    [Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , Z(i+1,j) , -Q(i,j,S)],
-                    [Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , Z(i+1,j) , Z(i,j-1)],
-                    [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , -Q(i,j,E) , -Q(i,j,S)],
-                    [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , -Q(i,j,E) , Z(i,j-1)],
-                    [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , Z(i+1,j) , -Q(i,j,S)],
-                    [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1)],
-                    [-Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , -Q(i,j,S) , -Q(i,j,W)],
-                    [-Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , Z(i,j-1) , -Q(i,j,W)],
-                    [-Z(i,j) , -Q(i,j,N) , Z(i+1,j) , -Q(i,j,S) , -Q(i,j,W)],
-                    [-Z(i,j) , -Q(i,j,N) , Z(i+1,j) , Z(i,j-1) , -Q(i,j,W)],
-                    [-Z(i,j) , Z(i,j+1) , -Q(i,j,E) , -Q(i,j,S) , -Q(i,j,W)],
-                    [-Z(i,j) , Z(i,j+1) , -Q(i,j,E) , Z(i,j-1) , -Q(i,j,W)],
-                    [-Z(i,j) , Z(i,j+1) , Z(i+1,j) , -Q(i,j,S) , -Q(i,j,W)],
-                    [-Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) , -Q(i,j,W)]]
-                    
-                    #[-Q(i,j,N) & Z(i,j+1)] , [-Q(i,j,E) & Z(i+1,j)] , [-Q(i,j,S) & Z(i,j-1)] , [-Q(i,j,W) & Z(i-1,j)] => Z(i,j)
-                    #CrowsF
-                    cnf_clauses+= [[-Z(i-1,j) , -Z(i,j) , Q(i,j,W)],
-                    [-Z(i,j) , Q(i,j,N) , -Z(i,j+1)],
-                    [-Z(i,j) , Q(i,j,E) , -Z(i+1,j)],
-                    [-Z(i,j) , Q(i,j,S) , -Z(i,j-1)]]
-            '''
+        if ((1 < i and i< rows) and (1 < j and j< cols)):
+            #-Z(i,j) , [-Q(i,j,N) & Z(i,j+1)] , [-Q(i,j,E) & Z(i+1,j)] , [-Q(i,j,S) & Z(i,j-1)] , [-Q(i,j,W) & Z(i-1,j)]
+            #CrowsF
+            cnf_clauses+= [[Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , -Q(i,j,S)],
+            [Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , Z(i,j-1)],
+            [Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , Z(i+1,j) , -Q(i,j,S)],
+            [Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , Z(i+1,j) , Z(i,j-1)],
+            [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , -Q(i,j,E) , -Q(i,j,S)],
+            [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , -Q(i,j,E) , Z(i,j-1)],
+            [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , Z(i+1,j) , -Q(i,j,S)],
+            [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1)],
+            [-Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , -Q(i,j,S) , -Q(i,j,W)],
+            [-Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , Z(i,j-1) , -Q(i,j,W)],
+            [-Z(i,j) , -Q(i,j,N) , Z(i+1,j) , -Q(i,j,S) , -Q(i,j,W)],
+            [-Z(i,j) , -Q(i,j,N) , Z(i+1,j) , Z(i,j-1) , -Q(i,j,W)],
+            [-Z(i,j) , Z(i,j+1) , -Q(i,j,E) , -Q(i,j,S) , -Q(i,j,W)],
+            [-Z(i,j) , Z(i,j+1) , -Q(i,j,E) , Z(i,j-1) , -Q(i,j,W)],
+            [-Z(i,j) , Z(i,j+1) , Z(i+1,j) , -Q(i,j,S) , -Q(i,j,W)],
+            [-Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) , -Q(i,j,W)]]
+            
+            #[-Q(i,j,N) & Z(i,j+1)] , [-Q(i,j,E) & Z(i+1,j)] , [-Q(i,j,S) & Z(i,j-1)] , [-Q(i,j,W) & Z(i-1,j)] => Z(i,j)
+            #CrowsF
+            cnf_clauses+= [[-Z(i-1,j) , -Z(i,j) , Q(i,j,W)],
+            [-Z(i,j) , Q(i,j,N) , -Z(i,j+1)],
+            [-Z(i,j) , Q(i,j,E) , -Z(i+1,j)],
+            [-Z(i,j) , Q(i,j,S) , -Z(i,j-1)]]
+            
+
+
+        if debug:
+            print()
 
         # Reachable cells
         # r(c,c)
         # r(c(i,j),c(i,j))
+        cnf_clauses += [[ R(i,j,i,j) ]]
 
-    cnf_clauses += [[ R(i,j,i,j) ]]
+        for x in range(1,rows+1):
+            for y in range(1,cols+1):
+                #North
+                #r(c(i,j),c(x,y)) and -q(c(x,y),N) => r(c(i,j),c(x,y-1))
+                if (y != 1):
+                    cnf_clauses += [[ -R(i,j,x,y),Q(x,y,N),R(i,j,x,y-1)]]
 
+                #South
+                #R(c(i,j),c(x,y)) and -q(c(x,y),S) => R(c(i,j),c(x,y+1))
+                if (y != cols ): #if (y != M):
+                    cnf_clauses += [[-R(i,j,x,y),Q(x,y,S),R(i,j,x,y+1)]]
 
-    for x in range(1,rows+1):
-        for y in range(1,cols+1):
-            #North
-            #r(c(i,j),c(x,y)) and -q(c(x,y),N) => r(c(i,j),c(x,y-1))
-            if (y != 1):
-                cnf_clauses += [[ -R(i,j,x,y),Q(x,y,N),R(i,j,x,y-1)]]
+                #East
+                #R(c(i,j),c(x,y)) and -q(c(x,y),E) => R(c(i,j),c(x+1,y))
+                if (x != rows): 
+                    cnf_clauses += [[-R(i,j,x,y),Q(x,y,E),R(i,j,x+1,y)]]
 
-            #South
-            #R(c(i,j),c(x,y)) and -q(c(x,y),S) => R(c(i,j),c(x,y+1))
-            if (y != cols ): #if (y != M):
-                cnf_clauses += [[-R(i,j,x,y),Q(x,y,S),R(i,j,x,y+1)]]
-
-            #East
-            #R(c(i,j),c(x,y)) and -q(c(x,y),E) => R(c(i,j),c(x+1,y))
-            if (x != rows): 
-                cnf_clauses += [[-R(i,j,x,y),Q(x,y,E),R(i,j,x+1,y)]]
-
-            #West
-            #R(c(i,j),c(x,y)) and -q(c(x,y),W) => R(c(i,j),c(x-1,y))
-            if (y != cols): # 
-                    cnf_clauses += [[-R(i,j,x,y),Q(x,y,W),R(i,j,x-1,y)]]
-
-    if debug:
-        print()
-
-
-        # M = 5 # ?
-        # if ( (i == 1) and (1 <= j and j <= M) ):
-        #     cnf_clauses += [ [Q(1,j,Dir.west),Z(1,j)] ]
-        #     cnf_clauses += [-Z(1,j),-Q(1,j,Dir.west)]
-            # if ( (i == N) and (1 <= j and j <= M) ):
-            #     q(N,j,e) v z(N,j) and
-            #     -z(N,j) v -q(N,j,e)
-
-            # if ( (1 <= i and i <= N) and (j == 1) ):
-            #     q(i,1,s) v z(i,1) and
-            #     -z(i,1) v -q(i,1,s)
-
-            # if ( (1 <= i and i <= N) and (j == M) ):
-            #     q(i,M,n) v z(i,M) and
-            #     -z(i,M) v -q(i,M,n)
-
-            # if ((1 < i and i< N) and (1 < j and j< M)):
-            #     #-z(i,j) v [-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)]
-            #     #CNF
-            #     (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s))
-            #     (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ z(i,j-1))
-            #     (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ ¬q(i,j,s))
-            #     (z(i-1,j) ∨ ¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ z(i,j-1))
-            #     (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s))
-            #     (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ z(i,j-1))
-            #     (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ ¬q(i,j,s))
-            #     (z(i-1,j) ∨ ¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ z(i,j-1))
-            #     (¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-            #     (¬z(i,j) ∨ ¬q(i,j,n) ∨ ¬q(i,j,e) ∨ z(i,j-1) ∨ ¬q(i,j,w))
-            #     (¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-            #     (¬z(i,j) ∨ ¬q(i,j,n) ∨ z(i+1,j) ∨ z(i,j-1) ∨ ¬q(i,j,w))
-            #     (¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-            #     (¬z(i,j) ∨ z(i,j+1) ∨ ¬q(i,j,e) ∨ z(i,j-1) ∨ ¬q(i,j,w))
-            #     (¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ ¬q(i,j,s) ∨ ¬q(i,j,w))
-            #     (¬z(i,j) ∨ z(i,j+1) ∨ z(i+1,j) ∨ z(i,j-1) ∨ ¬q(i,j,w))
-                
-            #     #[-q(i,j,n) & z(i,j+1)] v [-q(i,j,e) & z(i+1,j)] v [-q(i,j,s) & z(i,j-1)] v [-q(i,j,w) & z(i-1,j)] => z(i,j)
-            #     #CNF
-            #     (¬z(i-1,j) ∨ ¬z(i,j) ∨ q(i,j,w))
-            #     (¬z(i,j) ∨ q(i,j,n) ∨ ¬z(i,j+1))
-            #     (¬z(i,j) ∨ q(i,j,e) ∨ ¬z(i+1,j))
-            #     (¬z(i,j) ∨ q(i,j,s) ∨ ¬z(i,j-1))
-
-
-            # Interior cells reachable
-            #z(c) & z(c') => r(c,c')
-            # for x in range(N):
-            #     for y in range(M):
-            #         ¬z(i,j) v ¬z(x,y) v r(c(i,j),c(x,y))
-
+                #West
+                #R(c(i,j),c(x,y)) and -q(c(x,y),W) => R(c(i,j),c(x-1,y))
+                if (y != cols): # 
+                        cnf_clauses += [[-R(i,j,x,y),Q(x,y,W),R(i,j,x-1,y)]]
 
         
 
