@@ -471,15 +471,16 @@ for i,line in enumerate(rep,1):
         #Estan cubiertas por los laterales V + H
 
         #CASOS INTERNOS EN FORMATO CNF ACA 
-        ((q(i,j,N)) v (q(i,j,W)) v (q(i-1,j-1,S)) v (¬q(i-1,j-1,E))) ∧
-        ((q(i,j,N)) v (q(i,j,W)) v (¬q(i-1,j-1,S)) v (q(i-1,j-1,E))) ∧
-        ((q(i,j,N)) v (¬q(i,j,W)) v (q(i-1,j-1,S)) v (q(i-1,j-1,E))) ∧
-        ((q(i,j,N)) v (¬q(i,j,W)) v (¬q(i-1,j-1,S)) v (¬q(i-1,j-1,E))) ∧
-        ((¬q(i,j,N)) v (q(i,j,W)) v (q(i-1,j-1,S)) v (q(i-1,j-1,E))) ∧
-        ((¬q(i,j,N)) v (q(i,j,W)) v (¬q(i-1,j-1,S)) v (¬q(i-1,j-1,E))) ∧
-        ((¬q(i,j,N)) v (¬q(i,j,W)) v (q(i-1,j-1,S)) v (¬q(i-1,j-1,E))) ∧
-        ((¬q(i,j,N)) v (¬q(i,j,W)) v (¬q(i-1,j-1,S)) v (q(i-1,j-1,E))) ∧
-        ((¬q(i,j,N)) v (¬q(i,j,W)) v (¬q(i-1,j-1,S)) v (¬q(i-1,j-1,E)))
+        cnf_clauses += [[Q(i,j,N) , (Q(i,j,W)) , (Q(i-1,j-1,S)) , (-Q(i-1,j-1,E))],
+        [Q(i,j,N) , (Q(i,j,W)) , (-Q(i-1,j-1,S)) , (Q(i-1,j-1,E))],
+        [Q(i,j,N) , (-Q(i,j,W)) , (Q(i-1,j-1,S)) , (Q(i-1,j-1,E))],
+        [Q(i,j,N) , (-Q(i,j,W)) , (-Q(i-1,j-1,S)) , (-Q(i-1,j-1,E))],
+        [-Q(i,j,N) , (Q(i,j,W)) , (Q(i-1,j-1,S)) , (Q(i-1,j-1,E))],
+        [-Q(i,j,N) , (Q(i,j,W)) , (-Q(i-1,j-1,S)) , (-Q(i-1,j-1,E))],
+        [-Q(i,j,N) , (-Q(i,j,W)) , (Q(i-1,j-1,S)) , (-Q(i-1,j-1,E))],
+        [-Q(i,j,N) , (-Q(i,j,W)) , (-Q(i-1,j-1,S)) , (Q(i-1,j-1,E))],
+        [-Q(i,j,N) , (-Q(i,j,W)) , (-Q(i-1,j-1,S)) , (-Q(i-1,j-1,E))]]
+        # Casos internos:
         # Casos internos:
         for i in range(2,rows-1):
             for j in range(2,cols-1):
