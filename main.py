@@ -161,7 +161,7 @@ class R(IjClause):
 def main(in_str):
     # Correr con: python3 main.py > primerEj.cnf
     # Hacer debug = True abajo para ver representacion para humanos de lo que esta pasando jajjajaja
-    debug = True
+    debug = False
     
     # Read from IO representation
     # in_str = input()
