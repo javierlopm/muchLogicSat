@@ -140,7 +140,7 @@ cnf_clauses = []
 
 # Impresion de tablero de forma rápida
 if debug:
-    for i in range(0,6):
+    for i in range(0,cols+1):
         print(".",end=" ")
     print()
 
@@ -233,45 +233,67 @@ for i,line in enumerate(rep,1):
         E=Dir.east
         W=Dir.west 
         #Clausulas tipo 2
-        '''
+
         for j in range(1,cols):
             cnf_clauses+= [[Q(1,j,W),Z(1,j)],[-Q(1,j,W),-Z(1,j)]]
-            cnf_clauses+= [[Q(cols,j,E),Z(cols,j)],[-Q(cols,j,E),-Z(cols,j)]]
+            cnf_clauses+= [[Q(rows,j,E),Z(rows,j)],[-Q(rows,j,E),-Z(rows,j)]]
 
+
+        
+
+        '''
+        ## como isaac lo hizo
+
+        # IntErior ,S ExtErior clauSES
         for i in range(1,rows):
-            cnf_clauses+= [[Q(i,1,S),Z(i,1)],[-Q(i,1,S),-Z(i,1)]]
-            cnf_clauses+= [[Q(i,rows,N),Z(i,rows)],[-Q(i,rows,N),-Z(i,rows)]]
+            for j in range(1,cols):
+                if ( (i == 1) and (1 <= j and j <= cols) ):
+                    cnf_clauses+= [[Q(1,j,W) , Z(1,j)],
+                    [-Z(1,j) , -Q(1,j,W)]]
 
-        for i in range(2,rows-1):
-            for j in range(2,cols-1):
-                #(=>)
-                #( !E ||  !N ||  !P ||  !S || V) && ( !E ||  !N ||  !P ||  !S ||  !W) && ( !E ||  !N ||  !P || U || V) && ( !E ||  !N ||  !P || U ||  !W) && ( !E ||  !P || R ||  !S || V) && ( !E ||  !P || R ||  !S ||  !W) && ( !E ||  !P || R || U || V) && ( !E ||  !P || R || U ||  !W) && ( !N ||  !P ||  !S || T || V) && ( !N ||  !P ||  !S || T ||  !W) && ( !N ||  !P || T || U || V) && ( !N ||  !P || T || U ||  !W) && ( !P || R ||  !S || T || V) && ( !P || R ||  !S || T ||  !W) && ( !P || R || T || U || V) && ( !P || R || T || U ||  !W)
-                
-                cnf_clauses+=  [[ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i-1,j)] ,
-                 [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) ,  -Q(i,j,W)] ,
-                 [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) , Z(i,j-1) , Z(i-1,j)] ,
-                 [ -Q(i,j,E) ,  -Q(i,j,N) ,  -Z(i,j) , Z(i,j-1) ,  -Q(i,j,W)] ,
-                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i-1,j)] ,
-                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) ,  -Q(i,j,W)] ,
-                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) , Z(i,j-1) , Z(i-1,j)] ,
-                 [ -Q(i,j,E) ,  -Z(i,j) , Z(i,j+1) , Z(i,j-1) ,  -Q(i,j,W)] ,
-                 [ -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i+1,j) , Z(i-1,j)] ,
-                 [ -Q(i,j,N) ,  -Z(i,j) ,  -Q(i,j,S) , Z(i+1,j) ,  -Q(i,j,W)] ,
-                 [ -Q(i,j,N) ,  -Z(i,j) , Z(i+1,j) , Z(i,j-1) , Z(i-1,j)] ,
-                 [ -Q(i,j,N) ,  -Z(i,j) , Z(i+1,j) , Z(i,j-1) ,  -Q(i,j,W)] ,
-                 [ -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i+1,j) , Z(i-1,j)] ,
-                 [ -Z(i,j) , Z(i,j+1) ,  -Q(i,j,S) , Z(i+1,j) ,  -Q(i,j,W)] ,
-                 [ -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) , Z(i-1,j)] ,
-                 [ -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) ,  -Q(i,j,W)] ]
+                if ( (i == rows) and (1 <= j and j <= cols) ):
+                    cnf_clauses+= [[Q(rows,j,E) , Z(rows,j)],
+                    [-Z(rows,j) , -Q(rows,j,E)]]
 
-                 #(<=)
-                 #(E || P ||  !T) && (N || P ||  !R) && (P || S ||  !U) && (P ||  !V || W)
+                if ( (1 <= i and i <= rows) and (j == 1) ):
+                    cnf_clauses+= [[Q(i,1,S) , Z(i,1)],
+                    [-Z(i,1) , -Q(i,1,S)]]
 
-                cnf_clauses+=[[Q(i,j,E) , Z(i,j) ,  -Z(i+1,j)] ,
-                 [Q(i,j,N) , Z(i,j) ,  -Z(i,j+1)] ,
-                 [Z(i,j) , Q(i,j,S) ,  -Z(i,j-1)] ,
-                 [Z(i,j) ,  -Z(i-1,j) , Q(i,j,W)]]
+                if ( (1 <= i and i <= rows) and (j == cols) ):
+                    cnf_clauses+= [[Q(i,cols,N) , Z(i,cols)],
+                    [-Z(i,cols) , -Q(i,cols,N)]]
+
+                if ((1 < i and i< rows) and (1 < j and j< cols)):
+                    #-Z(i,j) , [-Q(i,j,N) & Z(i,j+1)] , [-Q(i,j,E) & Z(i+1,j)] , [-Q(i,j,S) & Z(i,j-1)] , [-Q(i,j,W) & Z(i-1,j)]
+                    #CrowsF
+                    cnf_clauses+= [[Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , -Q(i,j,S)],
+                    [Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , Z(i,j-1)],
+                    [Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , Z(i+1,j) , -Q(i,j,S)],
+                    [Z(i-1,j) , -Z(i,j) , -Q(i,j,N) , Z(i+1,j) , Z(i,j-1)],
+                    [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , -Q(i,j,E) , -Q(i,j,S)],
+                    [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , -Q(i,j,E) , Z(i,j-1)],
+                    [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , Z(i+1,j) , -Q(i,j,S)],
+                    [Z(i-1,j) , -Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1)],
+                    [-Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , -Q(i,j,S) , -Q(i,j,W)],
+                    [-Z(i,j) , -Q(i,j,N) , -Q(i,j,E) , Z(i,j-1) , -Q(i,j,W)],
+                    [-Z(i,j) , -Q(i,j,N) , Z(i+1,j) , -Q(i,j,S) , -Q(i,j,W)],
+                    [-Z(i,j) , -Q(i,j,N) , Z(i+1,j) , Z(i,j-1) , -Q(i,j,W)],
+                    [-Z(i,j) , Z(i,j+1) , -Q(i,j,E) , -Q(i,j,S) , -Q(i,j,W)],
+                    [-Z(i,j) , Z(i,j+1) , -Q(i,j,E) , Z(i,j-1) , -Q(i,j,W)],
+                    [-Z(i,j) , Z(i,j+1) , Z(i+1,j) , -Q(i,j,S) , -Q(i,j,W)],
+                    [-Z(i,j) , Z(i,j+1) , Z(i+1,j) , Z(i,j-1) , -Q(i,j,W)]]
+                    
+                    #[-Q(i,j,N) & Z(i,j+1)] , [-Q(i,j,E) & Z(i+1,j)] , [-Q(i,j,S) & Z(i,j-1)] , [-Q(i,j,W) & Z(i-1,j)] => Z(i,j)
+                    #CrowsF
+                    cnf_clauses+= [[-Z(i-1,j) , -Z(i,j) , Q(i,j,W)],
+                    [-Z(i,j) , Q(i,j,N) , -Z(i,j+1)],
+                    [-Z(i,j) , Q(i,j,E) , -Z(i+1,j)],
+                    [-Z(i,j) , Q(i,j,S) , -Z(i,j-1)]]
             '''
+
+
+
+
     if debug:
         print()
 
@@ -489,7 +511,7 @@ for i,line in enumerate(rep,1):
 
 # Fin del cuadro
 if debug:
-    for i in range(0,6):
+    for i in range(0,cols+1):
         print(".",end=" ")
     print("\n\n")
 
@@ -584,13 +606,13 @@ try:
 
     index = 0
 
-    print("5 5 " + in_str)
-    print("5 5 ",end="")
+    print(str(rows)+" "+str(cols)+" " + in_str)
+    print(str(rows)+" "+str(cols)+" ",end="")
 
     # Print result in given format
-    for i in range(1,6):
+    for i in range(1,rows+1):
         for d in Dir:
-            for j in range(1,6):
+            for j in range(1,cols+1):
                 # Casos especiales: norte y oeste
                 # Solo la primera fila tiene nortes
                 if (i > 1) and (d is Dir.north):
