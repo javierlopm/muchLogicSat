@@ -414,6 +414,33 @@ for i in range(2,rows-1):
 #(¬q(1,1,N) and ¬q(1,1,W)) V (q(1,1,N) and q(1,1,W))
 #CNF
 
+
+#Puntos esquina
+#(1,1)
+#(¬q(1,1,N) and ¬q(1,1,W)) V (q(1,1,N) and q(1,1,W))
+#CNF
+cnf_clauses += [[-Q(1,1,N),Q(1,1,W)], [Q(1,1,N) , -Q(1,1,W)] ]
+
+
+#(n+1,1)
+#(¬q(n,1,N) and ¬q(n,1,E)) V (q(n,1,N) and q(n,1,E))
+#CNF
+cnf_clauses += [[-Q(rows,1,N),Q(rows,1,E)], [Q(rows,1,N) , -Q(rows,1,E)] ]
+
+
+#(1,m+1)
+#(¬q(1,m,S) and ¬q(1,m,W)) V (q(1,m,S) and q(1,m,W))
+#CNF
+cnf_clauses += [[-Q(1,cols,S),Q(1,cols,W)], [Q(1,cols,S) , -Q(1,cols,W)] ]
+
+
+#(n+1,m+1)
+#(¬q(n,m,S) and ¬q(n,m,E)) V (q(n,m,S) and q(n,m,E))
+#CNF
+cnf_clauses += [[-Q(rows,cols,S),Q(rows,cols,E)], [Q(rows,cols,S) , -Q(rows,cols,E)] ]
+
+
+
 aux=[]
 for c in cnf_clauses:
     if len(c)==1:
