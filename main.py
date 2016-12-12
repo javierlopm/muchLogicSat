@@ -608,7 +608,6 @@ def main(in_str):
         from operator import attrgetter
 
         # Removing auxiliary clauses
-
         s0 = sorted(result,key=attrgetter("j"))
         s1 = sorted(s0,key=lambda c: c.dir.value )
         s2 = sorted(s1,key=attrgetter("i"))
@@ -617,11 +616,16 @@ def main(in_str):
             list(map(lambda c: print(c),s2))
             pass
 
+        if (not s2):
+            raise Exception("UNSAT")
+
         index = 0
 
         #print(str(rows)+" "+str(cols)+" " + in_str)
         print(in_str[:-1])
         print(str(rows)+" "+str(cols)+" ",end="")
+        
+
 
         # Print result in given format
         for i in range(1,rows+1):
@@ -655,7 +659,7 @@ def main(in_str):
         print("")
 
     except Exception as e:
-        print(e)
+        # print(e)
         print("UNSATISFIABLE")
 
 if __name__ == '__main__':
