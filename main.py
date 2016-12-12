@@ -658,4 +658,5 @@ def main(in_str):
 
 if __name__ == '__main__':
     for line in sys.stdin:
+        universe = set()
         main(line)
